@@ -42,13 +42,6 @@ export default function Navbar() {
             >
               Login
             </Link>
-            <span className="bg-gray-300 font-medium w-px h-10"></span>
-            <Link
-              to="/signup"
-              className="bg-primary text-white font-medium px-6 py-2 rounded-none hover:bg-primary/90 transition-colors"
-            >
-              Sign Up
-            </Link>
           </div>
 
           {/* Mobile Menu Bar Icon */}
@@ -103,13 +96,6 @@ export default function Navbar() {
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Login
-              </Link>
-              <Link
-                to="/signup"
-                className="w-full text-center bg-primary text-white font-medium px-6 py-2.5 hover:bg-primary/90 transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Sign Up
               </Link>
             </div>
           </div>

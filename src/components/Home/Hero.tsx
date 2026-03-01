@@ -79,7 +79,7 @@ export default function Hero() {
             {/* Search Button */}
             <button
               onClick={handleSearch}
-              className="w-full md:w-auto bg-primary text-white font-bold py-4 px-8 rounded-lg hover:bg-primary/90 transition-colors shrink-0"
+              className="w-full md:w-fit bg-primary text-white font-bold py-4 px-10 rounded-lg hover:bg-primary/90 transition-colors shrink-0"
             >
               Search my job
             </button>
