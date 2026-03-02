@@ -158,28 +158,11 @@ const LATEST_JOBS: Job[] = [
   },
 ];
 
-const getTagStyles = (tag: string) => {
-  switch (tag) {
-    case "Full-Time":
-      return "text-[#52D396] bg-[#EEFDF3] border border-[#52D396]/20";
-    case "Marketing":
-      return "text-[#F3A052] bg-transparent border border-[#F3A052]";
-    case "Design":
-      return "text-[#6961F1] bg-transparent border border-[#6961F1]";
-    case "Management":
-      return "text-[#6961F1] bg-transparent border border-[#6961F1]";
-    case "Developer":
-      return "text-[#6961F1] bg-transparent border border-[#6961F1]";
-    default:
-      return "text-gray-500 bg-gray-100 border border-gray-200";
-  }
-};
+import { getTagStyles } from "../../utils/jobUtils";
 
 export default function LatestJobs() {
   return (
     <section className="py-20 relative overflow-hidden bg-[#FAFBFF]">
-
-
       <div className="common_container relative z-10">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-4">
@@ -201,8 +184,6 @@ export default function LatestJobs() {
               key={job.id}
               className="flex flex-col sm:flex-row items-start sm:items-center gap-6 p-6 md:p-8 bg-white border border-gray-100 hover:shadow-md transition-shadow duration-300"
             >
-              {/* Logo */}
-              <div className="shrink-0">{job.logo}</div>
               {/* Job Information */}
               <div className="flex-1 w-full">
                 <h3 className="font-semibold text-lg md:text-xl text-slate-800 mb-2">
@@ -216,16 +197,18 @@ export default function LatestJobs() {
                 <div className="flex flex-wrap items-center gap-2">
                   <span
                     className={`px-4 py-1.5 text-xs font-semibold rounded-full ${getTagStyles(
+                      job.id,
                       job.timeType,
                     )}`}
                   >
                     {job.timeType}
                   </span>
                   <span className="text-gray-300 mx-1">|</span>
-                  {job.tags.map((tag) => (
+                  {job.tags.map((tag, index) => (
                     <span
                       key={tag}
                       className={`px-4 py-1.5 text-xs font-semibold rounded-full ${getTagStyles(
+                        index,
                         tag,
                       )}`}
                     >

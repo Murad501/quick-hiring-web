@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { JOBS, type JobTag } from "../data/jobs";
+import { JOBS } from "../data/jobs";
+import { getTagStyles } from "../utils/jobUtils";
 import { LuChevronLeft, LuMapPin, LuBriefcase } from "react-icons/lu";
 const KEY_RESPONSIBILITIES = [
   "Spearhead the design and execution of core product features.",
@@ -60,21 +61,6 @@ export default function JobDetails() {
     setIsSubmitted(true);
   };
 
-  const getTagStyles = (tag: JobTag) => {
-    switch (tag) {
-      case "Marketing":
-        return "bg-[#FDF3EB] text-[#F3A052] border border-[#F3A052]/20";
-      case "Design":
-        return "bg-[#EEFDF3] text-[#52D396] border border-[#52D396]/20";
-      case "Business":
-        return "bg-[#F4F4FF] text-[#6961F1] border border-[#6961F1]/20";
-      case "Technology":
-        return "bg-[#FEF4F4] text-[#F97070] border border-[#F97070]/20";
-      default:
-        return "bg-gray-100 text-gray-500";
-    }
-  };
-
   return (
     <div className="bg-slate-50 min-h-screen py-10 md:py-16">
       <div className="common_container">
@@ -94,7 +80,6 @@ export default function JobDetails() {
             {/* Header / Title Area */}
             <div className="bg-white p-8 border border-gray-200">
               <div className="flex items-start gap-6 mb-6">
-                <div className="w-20 h-20 shrink-0">{job.logo}</div>
                 <div>
                   <h1 className="text-3xl font-bold text-slate-800 mb-2">
                     {job.title}
@@ -119,10 +104,10 @@ export default function JobDetails() {
 
               {/* Tags */}
               <div className="flex flex-wrap gap-2 pt-6 border-t border-gray-100">
-                {job.tags.map((tag) => (
+                {job.tags.map((tag, index) => (
                   <span
                     key={tag}
-                    className={`px-3 py-1.5 text-xs font-semibold rounded-full ${getTagStyles(tag as JobTag)}`}
+                    className={`px-3 py-1.5 text-xs font-semibold rounded-full ${getTagStyles(index, tag)}`}
                   >
                     {tag}
                   </span>

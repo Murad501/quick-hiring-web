@@ -7,7 +7,6 @@ import Jobs from "./pages/Jobs";
 import JobDetails from "./pages/JobDetails";
 import Companies from "./pages/Companies";
 import Login from "./pages/Login";
-import SignUp from "./pages/SignUp";
 
 import AdminLayout from "./components/Admin/AdminLayout";
 import Overview from "./pages/Admin/Overview";
@@ -27,7 +26,6 @@ function App() {
           <Route path="/jobs/:id" element={<JobDetails />} />
           <Route path="/companies" element={<Companies />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
         </Route>
 
         <Route path="/admin" element={<AdminLayout />}>
