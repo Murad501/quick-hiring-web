@@ -1,25 +1,19 @@
 import { useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import {
-  LuChevronLeft,
-  LuSearch,
-  LuMail,
-  LuFileText,
-  LuX,
-} from "react-icons/lu";
-import { useGetJobByIdQuery } from "../../redux/api/jobApi";
+import { LuChevronLeft, LuSearch, LuFileText, LuX } from "react-icons/lu";
 import { useGetAllApplicationsQuery } from "../../redux/api/applicationApi";
+import type { Application } from "../../redux/api/applicationApi";
 import { useDebounce } from "../../hooks/useDebounce";
+import ApplicationModal from "../../components/Admin/ApplicationModal";
 
 export default function JobApplications() {
   const { id } = useParams<{ id: string }>();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [selectedApplication, setSelectedApplication] =
+    useState<Application | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { data: job, isLoading: isJobLoading } = useGetJobByIdQuery(
-    id as string,
-    { skip: !id },
-  );
   const {
     data: appResponse,
     isLoading: isAppsLoading,
@@ -27,8 +21,12 @@ export default function JobApplications() {
   } = useGetAllApplicationsQuery({ jobId: id }, { skip: !id });
 
   const applications = appResponse?.data || [];
-  const isLoading = isJobLoading || isAppsLoading;
+  const isLoading = isAppsLoading;
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
+
+  // Derive job details from the first application (they share the same jobId)
+  const jobTitleFallback = applications[0]?.jobTitle || "Job";
+  const jobCompanyFallback = applications[0]?.jobCompany || "Unknown Company";
 
   const filteredApplications = useMemo(() => {
     return applications.filter((app) => {
@@ -42,7 +40,7 @@ export default function JobApplications() {
     });
   }, [applications, debouncedSearchQuery, statusFilter]);
 
-  if (isLoading && !job) {
+  if (isLoading) {
     return (
       <div className="p-10 text-center font-bold text-xl text-slate-400 animate-pulse">
         Loading Job Details...
@@ -50,10 +48,10 @@ export default function JobApplications() {
     );
   }
 
-  if (!isLoading && !job) {
+  if (!isLoading && applications.length === 0) {
     return (
       <div className="p-10 text-center font-bold text-xl text-slate-700">
-        Job Not Found
+        No Applicants Found For This Job
       </div>
     );
   }
@@ -87,10 +85,10 @@ export default function JobApplications() {
 
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-slate-800 mb-2">
-          Applications for {job?.title}
+          Applications for {jobTitleFallback}
         </h1>
         <p className="text-slate-500">
-          {job?.company} • {applications.length} Total Applicants
+          {jobCompanyFallback} • {applications.length} Total Applicants
         </p>
       </div>
 
@@ -193,18 +191,25 @@ export default function JobApplications() {
                       </div>
                     </td>
                     <td className="py-4 px-6 text-sm text-slate-600 font-medium">
-                      Recent {/* Add backend timestamp when available */}
+                      {app.createdAt
+                        ? new Date(app.createdAt).toLocaleDateString("en-GB", {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          })
+                        : "Recent"}
                     </td>
                     <td className="py-4 px-6">
                       <select
-                        defaultValue={app.status}
-                        className={`text-xs font-semibold px-3 py-1.5 rounded-none border focus:ring-0 cursor-pointer appearance-none ${getStatusColor(app.status)}`}
+                        disabled={true}
+                        value={app.status.toLowerCase()}
+                        className={`text-xs font-semibold px-3 py-1.5 rounded-none border focus:ring-0 cursor-not-allowed appearance-none ${getStatusColor(app.status)}`}
                       >
-                        <option value="New">New</option>
-                        <option value="Reviewed">Reviewed</option>
-                        <option value="Interviewing">Interviewing</option>
-                        <option value="Rejected">Rejected</option>
-                        <option value="Hired">Hired</option>
+                        <option value="new">New</option>
+                        <option value="reviewed">Reviewed</option>
+                        <option value="interviewing">Interviewing</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="hired">Hired</option>
                       </select>
                     </td>
                     <td className="py-4 px-6">
@@ -220,12 +225,17 @@ export default function JobApplications() {
                       </div>
                     </td>
                     <td className="py-4 px-6 text-right">
-                      <button
-                        className="text-slate-500 hover:text-primary transition-colors p-2 rounded-none hover:bg-slate-100 inline-flex"
-                        title="Email Candidate"
-                      >
-                        <LuMail className="w-5 h-5" />
-                      </button>
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => {
+                            setSelectedApplication(app);
+                            setIsModalOpen(true);
+                          }}
+                          className="bg-primary text-white hover:bg-primary/90 transition-colors px-3 py-1.5 rounded-lg text-sm font-medium"
+                        >
+                          View
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -240,6 +250,12 @@ export default function JobApplications() {
           </table>
         </div>
       </div>
+
+      <ApplicationModal
+        application={selectedApplication}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 }

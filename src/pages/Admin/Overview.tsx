@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 import { LuBriefcase, LuUsers, LuTrendingUp } from "react-icons/lu";
-import { useGetAllJobsQuery } from "../../redux/api/jobApi";
+import { useGetAdminJobsQuery } from "../../redux/api/jobApi";
 import { useGetAllApplicationsQuery } from "../../redux/api/applicationApi";
 
 export default function Overview() {
-  const { data: jobResponse, isLoading: jobsLoading } = useGetAllJobsQuery({
+  const { data: jobResponse, isLoading: jobsLoading } = useGetAdminJobsQuery({
     limit: 3, // only load 3 recent jobs for the UI block
   });
   const { data: appResponse, isLoading: appsLoading } =

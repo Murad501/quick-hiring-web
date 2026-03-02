@@ -1,47 +1,40 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import {
-  LuSearch,
-  LuMail,
-  LuFileText,
-  LuX,
-  LuExternalLink,
-} from "react-icons/lu";
-import { useGetAllJobsQuery } from "../../redux/api/jobApi";
+import { LuSearch, LuX, LuExternalLink } from "react-icons/lu";
 import { useGetAllApplicationsQuery } from "../../redux/api/applicationApi";
+import type { Application } from "../../redux/api/applicationApi";
 import { useDebounce } from "../../hooks/useDebounce";
+import ApplicationModal from "../../components/Admin/ApplicationModal";
 
 export default function AllApplications() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [selectedApplication, setSelectedApplication] =
+    useState<Application | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { data: jobResponse, isLoading: isJobsLoading } = useGetAllJobsQuery(
-    {},
-  );
   const {
     data: appResponse,
     isLoading: isAppsLoading,
     isError,
   } = useGetAllApplicationsQuery();
 
-  const JOBS = jobResponse?.data || [];
   const applications = appResponse?.data || [];
 
-  const isLoading = isJobsLoading || isAppsLoading;
+  const isLoading = isAppsLoading;
 
   const enrichedApplications = useMemo(() => {
     return applications.map((app) => {
-      const job = JOBS.find((j) => j.jobId === app.jobId);
       return {
         ...app,
         id: app.applicationId,
-        jobTitle: job ? job.title : "Unknown Job",
-        company: job ? job.company : "Unknown",
-        appliedAt: "Recent", // Replace with backend date if available
+        jobTitle: app.jobTitle || "Unknown Job",
+        company: app.jobCompany || "Unknown",
+        appliedAt: app.createdAt,
         resume: app.resumeLink || "#",
       };
     });
-  }, [applications, JOBS]);
+  }, [applications]);
 
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
@@ -59,16 +52,16 @@ export default function AllApplications() {
   }, [enrichedApplications, debouncedSearchQuery, statusFilter]);
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case "New":
+    switch (status.toLowerCase()) {
+      case "new":
         return "bg-blue-50 text-blue-600 border-blue-200";
-      case "Reviewed":
+      case "reviewed":
         return "bg-yellow-50 text-yellow-600 border-yellow-200";
-      case "Interviewing":
+      case "interviewing":
         return "bg-purple-50 text-purple-600 border-purple-200";
-      case "Rejected":
+      case "rejected":
         return "bg-red-50 text-red-600 border-red-200";
-      case "Hired":
+      case "hired":
         return "bg-green-50 text-green-600 border-green-200";
       default:
         return "bg-gray-100 text-gray-600 border-gray-200";
@@ -196,14 +189,15 @@ export default function AllApplications() {
                     <td className="py-4 px-6">
                       <div className="flex flex-col items-start gap-1.5">
                         <select
-                          defaultValue={app.status}
-                          className={`text-xs font-semibold px-2 py-1 rounded-none border focus:ring-0 cursor-pointer appearance-none ${getStatusColor(app.status)}`}
+                          disabled={true} // Now managed via modal
+                          value={app.status.toLowerCase()}
+                          className={`text-xs font-semibold px-2 py-1 rounded-none border focus:ring-0 cursor-not-allowed appearance-none ${getStatusColor(app.status)}`}
                         >
-                          <option value="New">New</option>
-                          <option value="Reviewed">Reviewed</option>
-                          <option value="Interviewing">Interviewing</option>
-                          <option value="Rejected">Rejected</option>
-                          <option value="Hired">Hired</option>
+                          <option value="new">New</option>
+                          <option value="reviewed">Reviewed</option>
+                          <option value="interviewing">Interviewing</option>
+                          <option value="rejected">Rejected</option>
+                          <option value="hired">Hired</option>
                         </select>
                         <span className="text-xs text-slate-400 font-medium">
                           {app.appliedAt}
@@ -212,18 +206,14 @@ export default function AllApplications() {
                     </td>
                     <td className="py-4 px-6 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <a
-                          href={app.resume}
-                          className="text-slate-500 hover:text-primary transition-colors p-2 rounded-lg hover:bg-slate-100 inline-flex"
-                          title="View Resume"
-                        >
-                          <LuFileText className="w-5 h-5" />
-                        </a>
                         <button
-                          className="text-slate-500 hover:text-primary transition-colors p-2 rounded-lg hover:bg-slate-100 inline-flex"
-                          title="Email Candidate"
+                          onClick={() => {
+                            setSelectedApplication(app);
+                            setIsModalOpen(true);
+                          }}
+                          className="bg-primary text-white hover:bg-primary/90 transition-colors px-3 py-1.5 rounded-lg text-sm font-medium"
                         >
-                          <LuMail className="w-5 h-5" />
+                          View
                         </button>
                       </div>
                     </td>
@@ -240,6 +230,12 @@ export default function AllApplications() {
           </table>
         </div>
       </div>
+
+      <ApplicationModal
+        application={selectedApplication}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 }

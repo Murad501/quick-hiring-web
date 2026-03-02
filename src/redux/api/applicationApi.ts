@@ -8,7 +8,10 @@ export interface Application {
   email: string;
   resumeLink: string;
   coverNote: string;
-  status: "pending" | "reviewed";
+  status: "new" | "reviewed" | "interviewing" | "rejected" | "hired";
+  createdAt: string;
+  jobTitle?: string;
+  jobCompany?: string;
 }
 
 export interface ApplicationResponse {
@@ -35,7 +38,30 @@ export const applicationApi = baseApi.injectEndpoints({
       }),
       providesTags: ["Application"],
     }),
+    createApplication: builder.mutation<any, Partial<Application>>({
+      query: (body) => ({
+        url: "/applications",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Application"],
+    }),
+    updateApplicationStatus: builder.mutation<
+      any,
+      { applicationId: string; status: string }
+    >({
+      query: ({ applicationId, status }) => ({
+        url: `/applications/${applicationId}/status`,
+        method: "PATCH",
+        body: { status },
+      }),
+      invalidatesTags: ["Application"],
+    }),
   }),
 });
 
-export const { useGetAllApplicationsQuery } = applicationApi;
+export const {
+  useGetAllApplicationsQuery,
+  useCreateApplicationMutation,
+  useUpdateApplicationStatusMutation,
+} = applicationApi;

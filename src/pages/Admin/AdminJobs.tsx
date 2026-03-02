@@ -9,9 +9,13 @@ import {
 } from "react-icons/lu";
 import JobTypeDropdown from "../../components/Shared/JobTypeDropdown";
 import PostJobModal from "../../components/Admin/PostJobModal";
-import { useGetAllJobsQuery } from "../../redux/api/jobApi";
+import {
+  useGetAdminJobsQuery,
+  useUpdateJobStatusMutation,
+} from "../../redux/api/jobApi";
 import { JOB_TYPES } from "../../data/constants";
 import { useDebounce } from "../../hooks/useDebounce";
+import toast from "react-hot-toast";
 
 const ITEMS_PER_PAGE = 8;
 
@@ -32,9 +36,22 @@ export default function AdminJobs() {
 
   const {
     data: jobResponse,
-    isFetching: isLoading,
+    isLoading,
     isError,
-  } = useGetAllJobsQuery(queryParams);
+  } = useGetAdminJobsQuery(queryParams);
+  const [updateJobStatus] = useUpdateJobStatusMutation();
+
+  const handleStatusChange = async (jobId: string, newStatus: string) => {
+    try {
+      await updateJobStatus({
+        jobId,
+        status: newStatus as "open" | "closed",
+      }).unwrap();
+      toast.success(`Job status updated to ${newStatus}`);
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to update job status");
+    }
+  };
   const JOBS = jobResponse?.data || [];
   const TOTAL_JOBS = jobResponse?.meta?.total || 0;
 
@@ -115,6 +132,7 @@ export default function AdminJobs() {
                 <th className="py-4 px-6 font-medium">Job Title & Company</th>
                 <th className="py-4 px-6 font-medium">Location</th>
                 <th className="py-4 px-6 font-medium">Job Type</th>
+                <th className="py-4 px-6 font-medium">Status</th>
                 <th className="py-4 px-6 font-medium">Applications</th>
                 <th className="py-4 px-6 font-medium text-right">Actions</th>
               </tr>
@@ -140,6 +158,9 @@ export default function AdminJobs() {
                       <td className="py-4 px-6">
                         <div className="h-4 bg-slate-200 rounded w-28"></div>
                       </td>
+                      <td className="py-4 px-6">
+                        <div className="h-4 bg-slate-200 rounded w-28"></div>
+                      </td>
                       <td className="py-4 px-6 text-right">
                         <div className="h-9 w-32 bg-slate-200 rounded-none inline-block"></div>
                       </td>
@@ -150,7 +171,7 @@ export default function AdminJobs() {
               {isError && (
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={6}
                     className="py-12 text-center text-red-500 font-medium"
                   >
                     Failed to load jobs.
@@ -190,13 +211,30 @@ export default function AdminJobs() {
                       </span>
                     </td>
                     <td className="py-4 px-6">
+                      <select
+                        value={job.status || "open"}
+                        onChange={(e) =>
+                          handleStatusChange(job.jobId, e.target.value)
+                        }
+                        className={`text-xs font-semibold px-2 py-1 border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer ${
+                          job.status === "closed"
+                            ? "bg-red-50 border-red-200 text-red-600"
+                            : "bg-green-50 border-green-200 text-green-600"
+                        }`}
+                      >
+                        <option value="open">Open</option>
+                        <option value="closed">Closed</option>
+                      </select>
+                    </td>
+                    <td className="py-4 px-6">
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-slate-800">
-                          {job.title.length * 2 + 15}
-                        </span>{" "}
-                        {/* Mock logic for application count */}
+                          {job.applicationCount || 0}
+                        </span>
                         <span className="text-xs text-slate-500">
-                          applicants
+                          {job.applicationCount === 1
+                            ? "applicant"
+                            : "applicants"}
                         </span>
                       </div>
                     </td>
@@ -212,7 +250,7 @@ export default function AdminJobs() {
                 ))
               ) : !isLoading && !isError ? (
                 <tr>
-                  <td colSpan={5} className="py-12 text-center text-slate-500">
+                  <td colSpan={6} className="py-12 text-center text-slate-500">
                     No jobs found matching your criteria.
                   </td>
                 </tr>

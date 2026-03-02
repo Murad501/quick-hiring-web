@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getTagStyles } from "../utils/jobUtils";
 import { useGetJobByIdQuery } from "../redux/api/jobApi";
-import { LuChevronLeft, LuMapPin, LuBriefcase } from "react-icons/lu";
+import { useCreateApplicationMutation } from "../redux/api/applicationApi";
+import { LuChevronLeft, LuMapPin, LuBriefcase, LuLoader } from "react-icons/lu";
+import toast from "react-hot-toast";
 
 export default function JobDetails() {
   const { id } = useParams<{ id: string }>();
@@ -22,6 +24,9 @@ export default function JobDetails() {
   } = useGetJobByIdQuery(id as string, {
     skip: !id,
   });
+
+  const [createApplication, { isLoading: isSubmitting }] =
+    useCreateApplicationMutation();
 
   if (isLoading) {
     return (
@@ -50,9 +55,24 @@ export default function JobDetails() {
     );
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitted(true);
+    if (!id) return;
+
+    try {
+      await createApplication({
+        jobId: id,
+        name: formData.name,
+        email: formData.email,
+        resumeLink: formData.resumeUrl,
+        coverNote: formData.coverNote,
+      }).unwrap();
+
+      setIsSubmitted(true);
+      toast.success("Application submitted successfully!");
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to submit application");
+    }
   };
 
   return (
@@ -260,9 +280,17 @@ export default function JobDetails() {
                   <div className="mt-4 pt-4 border-t border-gray-100">
                     <button
                       type="submit"
-                      className="w-full md:w-auto md:min-w-[200px] md:mx-auto block bg-primary text-white font-bold py-4 px-8 rounded-lg hover:bg-primary/90 transition-all hover:shadow-lg hover:-translate-y-0.5"
+                      disabled={isSubmitting}
+                      className="w-full md:w-auto md:min-w-[200px] md:mx-auto flex justify-center items-center gap-2 bg-primary text-white font-bold py-4 px-8 rounded-lg hover:bg-primary/90 transition-all hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed"
                     >
-                      Submit Application
+                      {isSubmitting ? (
+                        <>
+                          <LuLoader className="w-5 h-5 animate-spin" />
+                          Submitting...
+                        </>
+                      ) : (
+                        "Submit Application"
+                      )}
                     </button>
                     <p className="text-xs text-slate-400 text-center mt-4">
                       By applying, you agree to our Terms & Privacy Policy.

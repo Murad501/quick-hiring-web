@@ -9,11 +9,13 @@ export interface Job {
   description: string;
   type: string;
   tags: string[];
+  status: "open" | "closed";
   sections: {
     title: string;
     values: string[];
   }[];
   jobId: string;
+  applicationCount?: number;
 }
 
 export interface JobResponse {
@@ -42,6 +44,13 @@ export const jobApi = baseApi.injectEndpoints({
       providesTags: (_result, _error, id) => [{ type: "Job", id }],
       transformResponse: (res: any) => res.data || res,
     }),
+    getAdminJobs: builder.query<JobResponse, Record<string, any>>({
+      query: (params) => ({
+        url: "/jobs/admin",
+        params,
+      }),
+      providesTags: ["Job"],
+    }),
     createJob: builder.mutation<Job, Partial<Job>>({
       query: (body) => ({
         url: "/jobs",
@@ -50,8 +59,24 @@ export const jobApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Job"],
     }),
+    updateJobStatus: builder.mutation<
+      Job,
+      { jobId: string; status: "open" | "closed" }
+    >({
+      query: ({ jobId, status }) => ({
+        url: `/jobs/${jobId}/status`,
+        method: "PATCH",
+        body: { status },
+      }),
+      invalidatesTags: ["Job"],
+    }),
   }),
 });
 
-export const { useGetAllJobsQuery, useGetJobByIdQuery, useCreateJobMutation } =
-  jobApi;
+export const {
+  useGetAllJobsQuery,
+  useGetJobByIdQuery,
+  useCreateJobMutation,
+  useGetAdminJobsQuery,
+  useUpdateJobStatusMutation,
+} = jobApi;

@@ -14,10 +14,12 @@ import AdminJobs from "./pages/Admin/AdminJobs";
 import JobApplications from "./pages/Admin/JobApplications";
 import AllApplications from "./pages/Admin/AllApplications";
 import { Toaster } from "react-hot-toast";
+import ScrollToTop from "./components/Shared/ScrollToTop";
 
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Toaster position="top-right" />
       <Routes>
         <Route element={<MainLayout />}>
