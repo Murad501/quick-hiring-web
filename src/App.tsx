@@ -14,10 +14,12 @@ import Overview from "./pages/Admin/Overview";
 import AdminJobs from "./pages/Admin/AdminJobs";
 import JobApplications from "./pages/Admin/JobApplications";
 import AllApplications from "./pages/Admin/AllApplications";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
     <BrowserRouter>
+      <Toaster position="top-right" />
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />

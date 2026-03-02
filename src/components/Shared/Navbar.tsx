@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useAppSelector } from "../../redux/app/hooks";
 
 const NAV_LINKS = [
   { name: "Find Jobs", path: "/jobs" },
@@ -8,6 +9,7 @@ const NAV_LINKS = [
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user } = useAppSelector((state) => state.user);
 
   return (
     <nav className="border-b border-gray-100 sticky top-0 z-50 bg-white">
@@ -36,12 +38,21 @@ export default function Navbar() {
         {/* Right Side */}
         <div className="flex items-center gap-4">
           <div className="hidden md:flex items-center gap-4">
-            <Link
-              to="/login"
-              className="font-medium text-primary px-6 py-2 hover:bg-primary hover:text-white transition-all duration-300"
-            >
-              Login
-            </Link>
+            {user ? (
+              <Link
+                to="/admin"
+                className="font-medium text-white bg-primary px-6 py-2 hover:bg-primary-dark transition-all duration-300 rounded-md"
+              >
+                Dashboard
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className="font-medium text-primary px-6 py-2 hover:bg-primary hover:text-white transition-all duration-300"
+              >
+                Login
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Bar Icon */}
@@ -90,13 +101,23 @@ export default function Navbar() {
               </Link>
             ))}
             <div className="p-6 flex flex-col gap-3 ">
-              <Link
-                to="/login"
-                className="w-full text-center font-medium text-primary border border-primary px-6 py-2.5 hover:bg-primary hover:text-white transition-all duration-300"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Login
-              </Link>
+              {user ? (
+                <Link
+                  to="/admin"
+                  className="w-full text-center font-medium text-white bg-primary border px-6 py-2.5 transition-all duration-300 rounded-md"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Dashboard
+                </Link>
+              ) : (
+                <Link
+                  to="/login"
+                  className="w-full text-center font-medium text-primary border border-primary px-6 py-2.5 hover:bg-primary hover:text-white transition-all duration-300"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Login
+                </Link>
+              )}
             </div>
           </div>
         </div>
