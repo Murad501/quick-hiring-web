@@ -7,89 +7,50 @@ import {
   LuFileText,
   LuX,
 } from "react-icons/lu";
-import { JOBS } from "../../data/jobs";
-
-// Mock Applications Data
-const MOCK_APPLICATIONS = [
-  {
-    id: 1,
-    jobId: 1,
-    name: "Alice Smith",
-    email: "alice@example.com",
-    status: "New",
-    appliedAt: "2024-03-10",
-    resume: "#",
-  },
-  {
-    id: 2,
-    jobId: 1,
-    name: "Bob Johnson",
-    email: "bob@example.com",
-    status: "Reviewed",
-    appliedAt: "2024-03-09",
-    resume: "#",
-  },
-  {
-    id: 3,
-    jobId: 2,
-    name: "Charlie Davis",
-    email: "charlie@example.com",
-    status: "Interviewing",
-    appliedAt: "2024-03-08",
-    resume: "#",
-  },
-  {
-    id: 4,
-    jobId: 3,
-    name: "Diana Prince",
-    email: "diana@example.com",
-    status: "Rejected",
-    appliedAt: "2024-03-07",
-    resume: "#",
-  },
-  {
-    id: 5,
-    jobId: 1,
-    name: "Ethan Hunt",
-    email: "ethan@example.com",
-    status: "New",
-    appliedAt: "2024-03-06",
-    resume: "#",
-  },
-  {
-    id: 6,
-    jobId: 3,
-    name: "Fiona Gallagher",
-    email: "fiona@example.com",
-    status: "Reviewed",
-    appliedAt: "2024-03-05",
-    resume: "#",
-  },
-];
+import { useGetJobByIdQuery } from "../../redux/api/jobApi";
+import { useGetAllApplicationsQuery } from "../../redux/api/applicationApi";
+import { useDebounce } from "../../hooks/useDebounce";
 
 export default function JobApplications() {
   const { id } = useParams<{ id: string }>();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
 
-  const job = JOBS.find((j) => j.id === Number(id));
+  const { data: job, isLoading: isJobLoading } = useGetJobByIdQuery(
+    id as string,
+    { skip: !id },
+  );
+  const {
+    data: appResponse,
+    isLoading: isAppsLoading,
+    isError,
+  } = useGetAllApplicationsQuery({ jobId: id }, { skip: !id });
 
-  const jobApplications = useMemo(() => {
-    return MOCK_APPLICATIONS.filter((app) => app.jobId === Number(id));
-  }, [id]);
+  const applications = appResponse?.data || [];
+  const isLoading = isJobLoading || isAppsLoading;
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   const filteredApplications = useMemo(() => {
-    return jobApplications.filter((app) => {
+    return applications.filter((app) => {
       const matchesSearch =
-        app.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        app.email.toLowerCase().includes(searchQuery.toLowerCase());
+        app.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+        app.email.toLowerCase().includes(debouncedSearchQuery.toLowerCase());
       const matchesStatus =
-        statusFilter === "All" || app.status === statusFilter;
+        statusFilter === "All" ||
+        app.status.toLowerCase() === statusFilter.toLowerCase();
       return matchesSearch && matchesStatus;
     });
-  }, [jobApplications, searchQuery, statusFilter]);
+  }, [applications, debouncedSearchQuery, statusFilter]);
 
-  if (!job) {
+  if (isLoading && !job) {
+    return (
+      <div className="p-10 text-center font-bold text-xl text-slate-400 animate-pulse">
+        Loading Job Details...
+      </div>
+    );
+  }
+
+  if (!isLoading && !job) {
     return (
       <div className="p-10 text-center font-bold text-xl text-slate-700">
         Job Not Found
@@ -98,16 +59,17 @@ export default function JobApplications() {
   }
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case "New":
+    const s = status.toLowerCase();
+    switch (s) {
+      case "new":
         return "bg-blue-50 text-blue-600 border-blue-200";
-      case "Reviewed":
+      case "reviewed":
         return "bg-yellow-50 text-yellow-600 border-yellow-200";
-      case "Interviewing":
+      case "interviewing":
         return "bg-purple-50 text-purple-600 border-purple-200";
-      case "Rejected":
+      case "rejected":
         return "bg-red-50 text-red-600 border-red-200";
-      case "Hired":
+      case "hired":
         return "bg-green-50 text-green-600 border-green-200";
       default:
         return "bg-gray-100 text-gray-600 border-gray-200";
@@ -125,10 +87,10 @@ export default function JobApplications() {
 
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-slate-800 mb-2">
-          Applications for {job.title}
+          Applications for {job?.title}
         </h1>
         <p className="text-slate-500">
-          {job.company} • {jobApplications.length} Total Applicants
+          {job?.company} • {applications.length} Total Applicants
         </p>
       </div>
 
@@ -181,10 +143,47 @@ export default function JobApplications() {
               </tr>
             </thead>
             <tbody>
-              {filteredApplications.length > 0 ? (
+              {isLoading && (
+                <>
+                  {[...Array(5)].map((_, i) => (
+                    <tr
+                      key={i}
+                      className="border-b border-gray-50 animate-pulse bg-white"
+                    >
+                      <td className="py-4 px-6">
+                        <div className="h-5 bg-slate-200 rounded w-48 mb-2"></div>
+                        <div className="h-4 bg-slate-200 rounded w-32"></div>
+                      </td>
+                      <td className="py-4 px-6">
+                        <div className="h-4 bg-slate-200 rounded w-24"></div>
+                      </td>
+                      <td className="py-4 px-6">
+                        <div className="h-7 bg-slate-200 rounded-none w-24"></div>
+                      </td>
+                      <td className="py-4 px-6">
+                        <div className="h-4 bg-slate-200 rounded w-20"></div>
+                      </td>
+                      <td className="py-4 px-6 text-right">
+                        <div className="h-8 w-10 bg-slate-200 rounded-lg inline-block"></div>
+                      </td>
+                    </tr>
+                  ))}
+                </>
+              )}
+              {isError && (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="py-12 text-center text-red-500 font-medium"
+                  >
+                    Failed to load applications.
+                  </td>
+                </tr>
+              )}
+              {!isLoading && !isError && filteredApplications.length > 0 ? (
                 filteredApplications.map((app) => (
                   <tr
-                    key={app.id}
+                    key={app.applicationId || app._id}
                     className="border-b border-gray-50 hover:bg-slate-50/50 transition-colors"
                   >
                     <td className="py-4 px-6">
@@ -194,7 +193,7 @@ export default function JobApplications() {
                       </div>
                     </td>
                     <td className="py-4 px-6 text-sm text-slate-600 font-medium">
-                      {app.appliedAt}
+                      Recent {/* Add backend timestamp when available */}
                     </td>
                     <td className="py-4 px-6">
                       <select
@@ -211,7 +210,9 @@ export default function JobApplications() {
                     <td className="py-4 px-6">
                       <div className="flex gap-3">
                         <a
-                          href={app.resume}
+                          href={app.resumeLink || "#"}
+                          target="_blank"
+                          rel="noreferrer"
                           className="text-primary hover:text-primary/80 transition-colors flex items-center gap-1 text-sm font-medium"
                         >
                           <LuFileText className="w-4 h-4" /> Resume
@@ -228,13 +229,13 @@ export default function JobApplications() {
                     </td>
                   </tr>
                 ))
-              ) : (
+              ) : !isLoading && !isError ? (
                 <tr>
                   <td colSpan={5} className="py-12 text-center text-slate-500">
                     No applications found matching your criteria.
                   </td>
                 </tr>
-              )}
+              ) : null}
             </tbody>
           </table>
         </div>

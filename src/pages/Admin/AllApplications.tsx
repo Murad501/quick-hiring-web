@@ -7,110 +7,56 @@ import {
   LuX,
   LuExternalLink,
 } from "react-icons/lu";
-import { JOBS } from "../../data/jobs";
-
-// Mock Applications Data
-const MOCK_APPLICATIONS = [
-  {
-    id: 1,
-    jobId: 1,
-    name: "Alice Smith",
-    email: "alice@example.com",
-    status: "New",
-    appliedAt: "2024-03-10",
-    resume: "#",
-  },
-  {
-    id: 2,
-    jobId: 1,
-    name: "Bob Johnson",
-    email: "bob@example.com",
-    status: "Reviewed",
-    appliedAt: "2024-03-09",
-    resume: "#",
-  },
-  {
-    id: 3,
-    jobId: 2,
-    name: "Charlie Davis",
-    email: "charlie@example.com",
-    status: "Interviewing",
-    appliedAt: "2024-03-08",
-    resume: "#",
-  },
-  {
-    id: 4,
-    jobId: 3,
-    name: "Diana Prince",
-    email: "diana@example.com",
-    status: "Rejected",
-    appliedAt: "2024-03-07",
-    resume: "#",
-  },
-  {
-    id: 5,
-    jobId: 1,
-    name: "Ethan Hunt",
-    email: "ethan@example.com",
-    status: "New",
-    appliedAt: "2024-03-06",
-    resume: "#",
-  },
-  {
-    id: 6,
-    jobId: 3,
-    name: "Fiona Gallagher",
-    email: "fiona@example.com",
-    status: "Reviewed",
-    appliedAt: "2024-03-05",
-    resume: "#",
-  },
-  {
-    id: 7,
-    jobId: 4,
-    name: "George King",
-    email: "george@example.com",
-    status: "Interviewing",
-    appliedAt: "2024-03-04",
-    resume: "#",
-  },
-  {
-    id: 8,
-    jobId: 5,
-    name: "Hannah Lee",
-    email: "hannah@example.com",
-    status: "Hired",
-    appliedAt: "2024-03-03",
-    resume: "#",
-  },
-];
+import { useGetAllJobsQuery } from "../../redux/api/jobApi";
+import { useGetAllApplicationsQuery } from "../../redux/api/applicationApi";
+import { useDebounce } from "../../hooks/useDebounce";
 
 export default function AllApplications() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
 
+  const { data: jobResponse, isLoading: isJobsLoading } = useGetAllJobsQuery(
+    {},
+  );
+  const {
+    data: appResponse,
+    isLoading: isAppsLoading,
+    isError,
+  } = useGetAllApplicationsQuery();
+
+  const JOBS = jobResponse?.data || [];
+  const applications = appResponse?.data || [];
+
+  const isLoading = isJobsLoading || isAppsLoading;
+
   const enrichedApplications = useMemo(() => {
-    return MOCK_APPLICATIONS.map((app) => {
-      const job = JOBS.find((j) => j.id === app.jobId);
+    return applications.map((app) => {
+      const job = JOBS.find((j) => j.jobId === app.jobId);
       return {
         ...app,
+        id: app.applicationId,
         jobTitle: job ? job.title : "Unknown Job",
         company: job ? job.company : "Unknown",
+        appliedAt: "Recent", // Replace with backend date if available
+        resume: app.resumeLink || "#",
       };
     });
-  }, []);
+  }, [applications, JOBS]);
+
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   const filteredApplications = useMemo(() => {
     return enrichedApplications.filter((app) => {
       const matchesSearch =
-        app.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        app.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        app.jobTitle.toLowerCase().includes(searchQuery.toLowerCase());
+        app.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+        app.email.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+        app.jobTitle.toLowerCase().includes(debouncedSearchQuery.toLowerCase());
       const matchesStatus =
-        statusFilter === "All" || app.status === statusFilter;
+        statusFilter === "All" ||
+        app.status.toLowerCase() === statusFilter.toLowerCase();
       return matchesSearch && matchesStatus;
     });
-  }, [enrichedApplications, searchQuery, statusFilter]);
+  }, [enrichedApplications, debouncedSearchQuery, statusFilter]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -188,7 +134,43 @@ export default function AllApplications() {
               </tr>
             </thead>
             <tbody>
-              {filteredApplications.length > 0 ? (
+              {isLoading && (
+                <>
+                  {[...Array(5)].map((_, i) => (
+                    <tr
+                      key={i}
+                      className="border-b border-gray-50 animate-pulse bg-white"
+                    >
+                      <td className="py-4 px-6">
+                        <div className="h-5 bg-slate-200 rounded w-48 mb-2"></div>
+                        <div className="h-4 bg-slate-200 rounded w-32"></div>
+                      </td>
+                      <td className="py-4 px-6">
+                        <div className="h-5 bg-slate-200 rounded w-40 mb-2"></div>
+                        <div className="h-4 bg-slate-200 rounded w-24"></div>
+                      </td>
+                      <td className="py-4 px-6">
+                        <div className="h-7 bg-slate-200 rounded-none w-24 mb-2"></div>
+                        <div className="h-3 bg-slate-200 rounded w-16"></div>
+                      </td>
+                      <td className="py-4 px-6 text-right">
+                        <div className="h-8 w-20 bg-slate-200 rounded-none inline-block"></div>
+                      </td>
+                    </tr>
+                  ))}
+                </>
+              )}
+              {isError && (
+                <tr>
+                  <td
+                    colSpan={4}
+                    className="py-12 text-center text-red-500 font-medium"
+                  >
+                    Failed to load applications.
+                  </td>
+                </tr>
+              )}
+              {!isLoading && !isError && filteredApplications.length > 0 ? (
                 filteredApplications.map((app) => (
                   <tr
                     key={app.id}
@@ -247,13 +229,13 @@ export default function AllApplications() {
                     </td>
                   </tr>
                 ))
-              ) : (
+              ) : !isLoading && !isError ? (
                 <tr>
-                  <td colSpan={5} className="py-12 text-center text-slate-500">
+                  <td colSpan={4} className="py-12 text-center text-slate-500">
                     No applications found matching your criteria.
                   </td>
                 </tr>
-              )}
+              ) : null}
             </tbody>
           </table>
         </div>

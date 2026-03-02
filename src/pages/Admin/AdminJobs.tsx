@@ -11,6 +11,7 @@ import JobTypeDropdown from "../../components/Shared/JobTypeDropdown";
 import PostJobModal from "../../components/Admin/PostJobModal";
 import { useGetAllJobsQuery } from "../../redux/api/jobApi";
 import { JOB_TYPES } from "../../data/constants";
+import { useDebounce } from "../../hooks/useDebounce";
 
 const ITEMS_PER_PAGE = 8;
 
@@ -19,18 +20,19 @@ export default function AdminJobs() {
   const [typeFilter, setTypeFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   const queryParams: Record<string, any> = {
     page: currentPage,
     limit: ITEMS_PER_PAGE,
   };
 
-  if (searchQuery) queryParams.search = searchQuery;
+  if (debouncedSearchQuery) queryParams.search = debouncedSearchQuery;
   if (typeFilter !== "All") queryParams.type = typeFilter;
 
   const {
     data: jobResponse,
-    isLoading,
+    isFetching: isLoading,
     isError,
   } = useGetAllJobsQuery(queryParams);
   const JOBS = jobResponse?.data || [];
@@ -119,13 +121,31 @@ export default function AdminJobs() {
             </thead>
             <tbody>
               {isLoading && (
-                <tr>
-                  <td colSpan={5} className="py-12 text-center">
-                    <div className="flex justify-center items-center">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                    </div>
-                  </td>
-                </tr>
+                <>
+                  {[...Array(5)].map((_, i) => (
+                    <tr
+                      key={i}
+                      className="border-b border-gray-50 animate-pulse bg-white"
+                    >
+                      <td className="py-4 px-6">
+                        <div className="h-5 bg-slate-200 rounded w-48 mb-2"></div>
+                        <div className="h-4 bg-slate-200 rounded w-32"></div>
+                      </td>
+                      <td className="py-4 px-6">
+                        <div className="h-4 bg-slate-200 rounded w-24"></div>
+                      </td>
+                      <td className="py-4 px-6">
+                        <div className="h-6 bg-slate-200 rounded-none w-20"></div>
+                      </td>
+                      <td className="py-4 px-6">
+                        <div className="h-4 bg-slate-200 rounded w-28"></div>
+                      </td>
+                      <td className="py-4 px-6 text-right">
+                        <div className="h-9 w-32 bg-slate-200 rounded-none inline-block"></div>
+                      </td>
+                    </tr>
+                  ))}
+                </>
               )}
               {isError && (
                 <tr>

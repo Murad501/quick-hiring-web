@@ -5,6 +5,7 @@ import { LuSearch, LuChevronLeft, LuChevronRight, LuX } from "react-icons/lu";
 import { useSearchParams } from "react-router-dom";
 import { useGetAllJobsQuery } from "../redux/api/jobApi";
 import { JOB_CATEGORIES, JOB_COMPANIES, JOB_TYPES } from "../data/constants";
+import { useDebounce } from "../hooks/useDebounce";
 
 export default function Jobs() {
   const [searchParams] = useSearchParams();
@@ -17,13 +18,14 @@ export default function Jobs() {
   const [typeFilter, setTypeFilter] = useState(initialType);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   const queryParams: Record<string, any> = {
     page: currentPage,
     limit: itemsPerPage,
   };
 
-  if (searchQuery) queryParams.search = searchQuery;
+  if (debouncedSearchQuery) queryParams.search = debouncedSearchQuery;
   if (typeFilter !== "All") queryParams.type = typeFilter;
   if (categoryFilters.length > 0)
     queryParams.category = categoryFilters.join(",");
@@ -31,7 +33,7 @@ export default function Jobs() {
 
   const {
     data: jobResponse,
-    isLoading,
+    isFetching: isLoading,
     isError,
   } = useGetAllJobsQuery(queryParams);
 
@@ -175,8 +177,32 @@ export default function Jobs() {
 
         {/* Loading / Error States */}
         {isLoading && (
-          <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            {[...Array(6)].map((_, i) => (
+              <div
+                key={i}
+                className="block p-6 border border-gray-200 bg-white rounded-xl h-full flex-col animate-pulse"
+              >
+                <div className="h-6 bg-slate-200 rounded w-3/4 mb-3"></div>
+                <div className="h-4 bg-slate-200 rounded w-1/2 mb-6"></div>
+
+                <div className="space-y-2 mb-6 flex-1">
+                  <div className="h-4 bg-slate-200 rounded w-full"></div>
+                  <div className="h-4 bg-slate-200 rounded w-5/6"></div>
+                </div>
+
+                <div className="flex flex-wrap gap-2 mb-6">
+                  <div className="h-6 w-16 bg-slate-200 rounded-full"></div>
+                  <div className="h-6 w-16 bg-slate-200 rounded-full"></div>
+                  <div className="h-6 w-20 bg-slate-200 rounded-full"></div>
+                </div>
+
+                <div className="flex justify-between items-center mt-auto pt-4 border-t border-gray-100">
+                  <div className="h-6 w-20 bg-slate-200 rounded"></div>
+                  <div className="h-8 w-8 bg-slate-200 rounded-full"></div>
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
