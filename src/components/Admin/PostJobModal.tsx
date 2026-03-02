@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { LuX } from "react-icons/lu";
+import { useCreateJobMutation } from "../../redux/api/jobApi";
 
 interface PostJobModalProps {
   isOpen: boolean;
@@ -16,6 +17,8 @@ export default function PostJobModal({ isOpen, onClose }: PostJobModalProps) {
     description: "",
   });
 
+  const [createJob, { isLoading }] = useCreateJobMutation();
+
   // Prevent background scrolling when modal is open
   useEffect(() => {
     if (isOpen) {
@@ -30,20 +33,46 @@ export default function PostJobModal({ isOpen, onClose }: PostJobModalProps) {
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate API call for now
-    alert("Job Posted Successfully! (Mock)");
-    onClose();
-    // Reset form
-    setFormData({
-      title: "",
-      company: "",
-      location: "",
-      type: "Full Time",
-      category: "Technology",
-      description: "",
-    });
+    try {
+      await createJob({
+        ...formData,
+        jobId: `JOB-${Date.now()}`,
+        tags: [formData.category],
+        sections: [
+          {
+            title: "Key Responsibilities",
+            values: [
+              "Lead the development of scalable applications.",
+              "Collaborate closely with product and design teams.",
+            ],
+          },
+          {
+            title: "Requirements",
+            values: [
+              "Proven experience in the relevant tech stack.",
+              "Strong communication and problem-solving skills.",
+            ],
+          },
+        ],
+      }).unwrap();
+
+      alert("Job Posted Successfully!");
+      onClose();
+      // Reset form
+      setFormData({
+        title: "",
+        company: "",
+        location: "",
+        type: "Full Time",
+        category: "Technology",
+        description: "",
+      });
+    } catch (err) {
+      console.error(err);
+      alert("Failed to post the job. Please try again.");
+    }
   };
 
   return (
@@ -177,16 +206,22 @@ export default function PostJobModal({ isOpen, onClose }: PostJobModalProps) {
           <button
             type="button"
             onClick={onClose}
-            className="px-6 py-3 font-bold text-slate-600 hover:bg-slate-200 rounded-none transition-colors"
+            disabled={isLoading}
+            className="px-6 py-3 font-bold text-slate-600 hover:bg-slate-200 rounded-none transition-colors disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             type="submit"
             form="post-job-form"
-            className="px-8 py-3 bg-primary text-white font-bold rounded-none hover:bg-primary/90 transition-all"
+            disabled={isLoading}
+            className="px-8 py-3 bg-primary text-white font-bold rounded-none hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]"
           >
-            Post Job
+            {isLoading ? (
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+            ) : (
+              "Post Job"
+            )}
           </button>
         </div>
       </div>

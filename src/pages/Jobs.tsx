@@ -1,9 +1,10 @@
-import React, { useState, useMemo } from "react";
-import { JOBS } from "../data/jobs";
+import React, { useState } from "react";
 import JobCard from "../components/Shared/JobCard";
 import JobTypeDropdown from "../components/Shared/JobTypeDropdown";
 import { LuSearch, LuChevronLeft, LuChevronRight, LuX } from "react-icons/lu";
 import { useSearchParams } from "react-router-dom";
+import { useGetAllJobsQuery } from "../redux/api/jobApi";
+import { JOB_CATEGORIES, JOB_COMPANIES, JOB_TYPES } from "../data/constants";
 
 export default function Jobs() {
   const [searchParams] = useSearchParams();
@@ -17,10 +18,30 @@ export default function Jobs() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
-  // Extract unique categories, companies, and types for dropdowns
-  const categories = Array.from(new Set(JOBS.flatMap((job) => job.tags)));
-  const companies = Array.from(new Set(JOBS.map((job) => job.company)));
-  const types = ["All", ...Array.from(new Set(JOBS.map((job) => job.type)))];
+  const queryParams: Record<string, any> = {
+    page: currentPage,
+    limit: itemsPerPage,
+  };
+
+  if (searchQuery) queryParams.search = searchQuery;
+  if (typeFilter !== "All") queryParams.type = typeFilter;
+  if (categoryFilters.length > 0)
+    queryParams.category = categoryFilters.join(",");
+  if (companyFilters.length > 0) queryParams.company = companyFilters.join(",");
+
+  const {
+    data: jobResponse,
+    isLoading,
+    isError,
+  } = useGetAllJobsQuery(queryParams);
+
+  const JOBS = jobResponse?.data || [];
+  const TOTAL_JOBS = jobResponse?.meta?.total || 0;
+  const totalPages = Math.ceil(TOTAL_JOBS / itemsPerPage) || 1;
+
+  const categories = JOB_CATEGORIES;
+  const companies = JOB_COMPANIES;
+  const types = ["All", ...JOB_TYPES];
 
   const toggleFilter = (
     currentFilters: string[],
@@ -33,33 +54,6 @@ export default function Jobs() {
       setFilters([...currentFilters, value]);
     }
   };
-
-  const filteredJobs = useMemo(() => {
-    return JOBS.filter((job) => {
-      const matchesSearch =
-        job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        job.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        job.company.toLowerCase().includes(searchQuery.toLowerCase());
-
-      const matchesCategory =
-        categoryFilters.length === 0 ||
-        job.tags.some((tag) => categoryFilters.includes(tag as string));
-
-      const matchesCompany =
-        companyFilters.length === 0 || companyFilters.includes(job.company);
-
-      const matchesType = typeFilter === "All" || job.type === typeFilter;
-
-      return matchesSearch && matchesCategory && matchesCompany && matchesType;
-    });
-  }, [searchQuery, categoryFilters, companyFilters, typeFilter]);
-
-  const totalPages = Math.ceil(filteredJobs.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedJobs = filteredJobs.slice(
-    startIndex,
-    startIndex + itemsPerPage,
-  );
 
   // Reset to page 1 when filters change
   React.useEffect(() => {
@@ -162,8 +156,7 @@ export default function Jobs() {
         {/* Results Header */}
         <div className="mb-6 flex justify-between items-center text-slate-600 font-medium">
           <p>
-            Showing {filteredJobs.length}{" "}
-            {filteredJobs.length === 1 ? "result" : "results"}
+            Showing {TOTAL_JOBS} {TOTAL_JOBS === 1 ? "result" : "results"}
           </p>
 
           {/* Active Filters Summary */}
@@ -180,14 +173,27 @@ export default function Jobs() {
           )}
         </div>
 
+        {/* Loading / Error States */}
+        {isLoading && (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          </div>
+        )}
+
+        {isError && (
+          <div className="text-center py-20 text-red-500 font-medium">
+            Failed to load jobs. Please try again later.
+          </div>
+        )}
+
         {/* Job Grid */}
-        {paginatedJobs.length > 0 ? (
+        {!isLoading && !isError && JOBS.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            {paginatedJobs.map((job) => (
-              <JobCard key={job.id} job={job} />
+            {JOBS.map((job) => (
+              <JobCard key={job.jobId} job={job} />
             ))}
           </div>
-        ) : (
+        ) : !isLoading && !isError ? (
           <div className="bg-white py-16 text-center rounded-xl border border-gray-100 shadow-sm mb-12">
             <p className="text-xl text-slate-500 font-medium mb-2">
               No jobs found matching your criteria.
@@ -204,10 +210,10 @@ export default function Jobs() {
               Clear all filters
             </button>
           </div>
-        )}
+        ) : null}
 
         {/* Pagination Controls */}
-        {totalPages > 1 && (
+        {totalPages > 1 && !isLoading && !isError && (
           <div className="flex justify-center items-center gap-4">
             <button
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}

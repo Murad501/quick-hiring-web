@@ -1,28 +1,8 @@
 import React, { useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { JOBS } from "../data/jobs";
 import { getTagStyles } from "../utils/jobUtils";
+import { useGetJobByIdQuery } from "../redux/api/jobApi";
 import { LuChevronLeft, LuMapPin, LuBriefcase } from "react-icons/lu";
-const KEY_RESPONSIBILITIES = [
-  "Spearhead the design and execution of core product features.",
-  "Collaborate with engineers and product managers to define project requirements.",
-  "Maintain a high bar for quality and establish best practices within the team.",
-  "Conduct thorough market and user research to guide technical decisions.",
-];
-
-const REQUIREMENTS = [
-  "3+ years of relevant industry experience in a similar role.",
-  "Strong foundational knowledge in modern frameworks and tooling.",
-  "Excellent communication skills and ability to articulate complex concepts.",
-  "A proactive attitude with the ability to take ownership of end-to-end delivery.",
-];
-
-const BENEFITS = [
-  "Competitive base salary and generous stock options.",
-  "Comprehensive health, dental, and vision insurance.",
-  "Flexible working hours with remote-first options.",
-  "Annual learning, development, and wellness stipends.",
-];
 
 export default function JobDetails() {
   const { id } = useParams<{ id: string }>();
@@ -34,10 +14,24 @@ export default function JobDetails() {
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // Find job based on ID
-  const job = JOBS.find((j) => j.id === Number(id));
+  // Fetch from RTK query
+  const {
+    data: job,
+    isLoading,
+    isError,
+  } = useGetJobByIdQuery(id as string, {
+    skip: !id,
+  });
 
-  if (!job) {
+  if (isLoading) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center bg-slate-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (isError || !job) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center bg-slate-50">
         <h2 className="text-2xl font-bold text-slate-800 mb-4">
@@ -129,32 +123,19 @@ export default function JobDetails() {
                   deliver outstanding, user-centric experiences.
                 </p>
 
-                <h3 className="text-lg font-semibold text-slate-800 mt-8 mb-4">
-                  Key Responsibilities
-                </h3>
-                <ul className="list-disc pl-5 space-y-2 mb-8">
-                  {KEY_RESPONSIBILITIES.map((item, idx) => (
-                    <li key={idx}>{item}</li>
+                {job.sections &&
+                  job.sections.map((section, idx) => (
+                    <div key={idx}>
+                      <h3 className="text-lg font-semibold text-slate-800 mt-8 mb-4">
+                        {section.title}
+                      </h3>
+                      <ul className="list-disc pl-5 space-y-2 mb-8">
+                        {section.values.map((item, itemIdx) => (
+                          <li key={itemIdx}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
                   ))}
-                </ul>
-
-                <h3 className="text-lg font-semibold text-slate-800 mt-8 mb-4">
-                  Requirements & Qualifications
-                </h3>
-                <ul className="list-disc pl-5 space-y-2 mb-8">
-                  {REQUIREMENTS.map((item, idx) => (
-                    <li key={idx}>{item}</li>
-                  ))}
-                </ul>
-
-                <h3 className="text-lg font-semibold text-slate-800 mt-8 mb-4">
-                  Benefits
-                </h3>
-                <ul className="list-disc pl-5 space-y-2">
-                  {BENEFITS.map((item, idx) => (
-                    <li key={idx}>{item}</li>
-                  ))}
-                </ul>
               </div>
             </div>
           </div>

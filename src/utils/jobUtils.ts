@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const getTagStyles = (id: number, _tag: string) => {
   const styleIndex = id % 5;
   switch (styleIndex) {

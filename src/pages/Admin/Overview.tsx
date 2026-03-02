@@ -1,24 +1,35 @@
 import { Link } from "react-router-dom";
 import { LuBriefcase, LuUsers, LuTrendingUp } from "react-icons/lu";
-import { JOBS } from "../../data/jobs";
+import { useGetAllJobsQuery } from "../../redux/api/jobApi";
+import { useGetAllApplicationsQuery } from "../../redux/api/applicationApi";
 
 export default function Overview() {
+  const { data: jobResponse, isLoading: jobsLoading } = useGetAllJobsQuery({
+    limit: 3, // only load 3 recent jobs for the UI block
+  });
+  const { data: appResponse, isLoading: appsLoading } =
+    useGetAllApplicationsQuery();
+
+  const JOBS = jobResponse?.data || [];
+  const TOTAL_JOBS = jobResponse?.meta?.total || 0;
+  const TOTAL_APPLICATIONS = appResponse?.meta?.total || 0;
+
   const stats = [
     {
       title: "Total Jobs",
-      value: JOBS.length.toString(),
+      value: jobsLoading ? "..." : TOTAL_JOBS.toString(),
       icon: LuBriefcase,
       color: "bg-blue-50 text-blue-600",
     },
     {
       title: "Total Applications",
-      value: "2,451", // Mock data
+      value: appsLoading ? "..." : TOTAL_APPLICATIONS.toString(),
       icon: LuUsers,
       color: "bg-green-50 text-green-600",
     },
     {
       title: "New Candidates",
-      value: "+124", // Mock data
+      value: appsLoading ? "..." : `+${TOTAL_APPLICATIONS}`, // Dynamic fallback map
       icon: LuTrendingUp,
       color: "bg-indigo-50 text-indigo-600",
     },
@@ -78,30 +89,38 @@ export default function Overview() {
           </div>
 
           <div className="flex flex-col gap-4">
-            {JOBS.slice(0, 3).map((job) => (
-              <div
-                key={job.id}
-                className="flex items-center justify-between p-4 rounded-none border border-gray-100 hover:border-gray-200 transition-colors"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 shrink-0">{job.logo}</div>
-                  <div>
-                    <h3 className="font-semibold text-slate-800">
-                      {job.title}
-                    </h3>
-                    <p className="text-sm text-slate-500">
-                      {job.company} • {job.type}
-                    </p>
-                  </div>
-                </div>
-                <Link
-                  to={`/admin/jobs/${job.id}/applications`}
-                  className="px-4 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 font-medium text-sm rounded-none transition-colors border border-gray-200"
+            {jobsLoading ? (
+              <p className="text-sm text-slate-500">Loading jobs...</p>
+            ) : JOBS.length === 0 ? (
+              <p className="text-sm text-slate-500">No jobs posted recently.</p>
+            ) : (
+              JOBS.map((job) => (
+                <div
+                  key={job.jobId}
+                  className="flex items-center justify-between p-4 rounded-none border border-gray-100 hover:border-gray-200 transition-colors"
                 >
-                  View
-                </Link>
-              </div>
-            ))}
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 shrink-0 bg-slate-50 border border-slate-100 flex items-center justify-center font-bold text-primary">
+                      {job.company.charAt(0)}
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-slate-800">
+                        {job.title}
+                      </h3>
+                      <p className="text-sm text-slate-500">
+                        {job.company} • {job.type}
+                      </p>
+                    </div>
+                  </div>
+                  <Link
+                    to={`/admin/jobs/${job.jobId}/applications`}
+                    className="px-4 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 font-medium text-sm rounded-none transition-colors border border-gray-200"
+                  >
+                    View
+                  </Link>
+                </div>
+              ))
+            )}
           </div>
         </div>
 

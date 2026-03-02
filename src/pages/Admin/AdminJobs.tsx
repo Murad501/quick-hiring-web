@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   LuSearch,
@@ -7,9 +7,10 @@ import {
   LuChevronRight,
   LuX,
 } from "react-icons/lu";
-import { JOBS } from "../../data/jobs";
 import JobTypeDropdown from "../../components/Shared/JobTypeDropdown";
 import PostJobModal from "../../components/Admin/PostJobModal";
+import { useGetAllJobsQuery } from "../../redux/api/jobApi";
+import { JOB_TYPES } from "../../data/constants";
 
 const ITEMS_PER_PAGE = 8;
 
@@ -19,31 +20,27 @@ export default function AdminJobs() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const queryParams: Record<string, any> = {
+    page: currentPage,
+    limit: ITEMS_PER_PAGE,
+  };
+
+  if (searchQuery) queryParams.search = searchQuery;
+  if (typeFilter !== "All") queryParams.type = typeFilter;
+
+  const {
+    data: jobResponse,
+    isLoading,
+    isError,
+  } = useGetAllJobsQuery(queryParams);
+  const JOBS = jobResponse?.data || [];
+  const TOTAL_JOBS = jobResponse?.meta?.total || 0;
+
   // Extract unique types for the filter dropdown
-  const types = useMemo(() => {
-    const allTypes = Array.from(new Set(JOBS.map((job) => job.type)));
-    return ["All", ...allTypes];
-  }, []);
-
-  // Filter Logic
-  const filteredJobs = useMemo(() => {
-    return JOBS.filter((job) => {
-      const matchesSearch =
-        job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        job.company.toLowerCase().includes(searchQuery.toLowerCase());
-
-      const matchesType = typeFilter === "All" || job.type === typeFilter;
-
-      return matchesSearch && matchesType;
-    });
-  }, [searchQuery, typeFilter]);
+  const types = ["All", ...JOB_TYPES];
 
   // Pagination Logic
-  const totalPages = Math.ceil(filteredJobs.length / ITEMS_PER_PAGE);
-  const paginatedJobs = useMemo(() => {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    return filteredJobs.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-  }, [filteredJobs, currentPage]);
+  const totalPages = Math.ceil(TOTAL_JOBS / ITEMS_PER_PAGE) || 1;
 
   return (
     <div>
@@ -121,17 +118,33 @@ export default function AdminJobs() {
               </tr>
             </thead>
             <tbody>
-              {paginatedJobs.length > 0 ? (
-                paginatedJobs.map((job) => (
+              {isLoading && (
+                <tr>
+                  <td colSpan={5} className="py-12 text-center">
+                    <div className="flex justify-center items-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                    </div>
+                  </td>
+                </tr>
+              )}
+              {isError && (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="py-12 text-center text-red-500 font-medium"
+                  >
+                    Failed to load jobs.
+                  </td>
+                </tr>
+              )}
+              {!isLoading && !isError && JOBS.length > 0 ? (
+                JOBS.map((job) => (
                   <tr
-                    key={job.id}
+                    key={job.jobId}
                     className="border-b border-gray-50 hover:bg-slate-50/50 transition-colors"
                   >
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 shrink-0 bg-white border border-gray-100 rounded-none flex items-center justify-center p-1">
-                          {job.logo}
-                        </div>
                         <div>
                           <div className="font-bold text-slate-800">
                             {job.title}
@@ -146,14 +159,20 @@ export default function AdminJobs() {
                       {job.location}
                     </td>
                     <td className="py-4 px-6">
-                      <span className="px-2.5 py-1 text-xs font-semibold bg-primary/10 text-primary border border-primary/20 rounded-none">
+                      <span
+                        className={`px-2.5 py-1 text-xs font-semibold border rounded-none ${
+                          job.type === "Full Time"
+                            ? "bg-primary/10 text-primary border-primary/20"
+                            : "bg-amber-50 text-amber-600 border-amber-200"
+                        }`}
+                      >
                         {job.type}
                       </span>
                     </td>
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-slate-800">
-                          {job.id * 3 + 12}
+                          {job.title.length * 2 + 15}
                         </span>{" "}
                         {/* Mock logic for application count */}
                         <span className="text-xs text-slate-500">
@@ -163,7 +182,7 @@ export default function AdminJobs() {
                     </td>
                     <td className="py-4 px-6 text-right">
                       <Link
-                        to={`/admin/jobs/${job.id}/applications`}
+                        to={`/admin/jobs/${job.jobId}/applications`}
                         className="inline-flex font-medium text-sm text-primary hover:text-white border border-primary hover:bg-primary px-4 py-2 rounded-none transition-colors"
                       >
                         View Applications
@@ -171,20 +190,20 @@ export default function AdminJobs() {
                     </td>
                   </tr>
                 ))
-              ) : (
+              ) : !isLoading && !isError ? (
                 <tr>
                   <td colSpan={5} className="py-12 text-center text-slate-500">
                     No jobs found matching your criteria.
                   </td>
                 </tr>
-              )}
+              ) : null}
             </tbody>
           </table>
         </div>
       </div>
 
       {/* Pagination Controls */}
-      {totalPages > 1 && (
+      {totalPages > 1 && !isLoading && !isError && (
         <div className="flex justify-center items-center gap-4">
           <button
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
