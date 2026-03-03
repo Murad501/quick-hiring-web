@@ -14,6 +14,7 @@ import AdminJobs from "./pages/Admin/AdminJobs";
 import JobApplications from "./pages/Admin/JobApplications";
 import AllApplications from "./pages/Admin/AllApplications";
 import { Toaster } from "react-hot-toast";
+import ProtectedRoute from "./components/Shared/ProtectedRoute";
 import ScrollToTop from "./components/Shared/ScrollToTop";
 import CompanyDetails from "./pages/CompanyDetails";
 
@@ -32,7 +33,14 @@ function App() {
           <Route path="/login" element={<Login />} />
         </Route>
 
-        <Route path="/admin" element={<AdminLayout />}>
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route index element={<Overview />} />
           <Route path="jobs" element={<AdminJobs />} />
           <Route path="jobs/:id/applications" element={<JobApplications />} />

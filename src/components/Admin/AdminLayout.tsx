@@ -1,13 +1,23 @@
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useAppDispatch } from "../../redux/app/hooks";
+import { logout } from "../../redux/features/userSlice";
 import {
   LuLayoutDashboard,
   LuBriefcase,
   LuFileText,
   LuLogOut,
+  LuArrowLeft,
 } from "react-icons/lu";
 
 export default function AdminLayout() {
   const location = useLocation();
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/");
+  };
 
   const navLinks = [
     { name: "Overview", path: "/admin", icon: LuLayoutDashboard },
@@ -52,14 +62,24 @@ export default function AdminLayout() {
           })}
         </nav>
 
-        <div className="p-4 border-t border-gray-200">
+        <div className="px-4 pb-4 space-y-1 border-t border-gray-100 pt-4">
           <Link
             to="/"
             className="flex items-center gap-3 px-4 py-3 rounded-none font-medium text-slate-600 hover:bg-slate-100 transition-colors"
           >
-            <LuLogOut className="w-5 h-5 text-slate-400" />
-            Exit Admin
+            <LuArrowLeft className="w-5 h-5 text-slate-400" />
+            Back to Home
           </Link>
+        </div>
+
+        <div className="p-4 border-t border-gray-200">
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-none font-medium text-red-600 hover:bg-red-50 transition-colors"
+          >
+            <LuLogOut className="w-5 h-5 text-red-500" />
+            Logout
+          </button>
         </div>
       </aside>
 
@@ -69,10 +89,16 @@ export default function AdminLayout() {
         <header className="md:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-30 flex items-center justify-between">
           <Link to="/admin" className="flex items-center">
             <img src="/Logo 1.png" alt="Logo" className="h-8 w-auto" />
-            <span className="text-xs font-medium bg-slate-100 text-slate-600 px-2 py-0.5 rounded ml-2 uppercase">
-              Admin
-            </span>
           </Link>
+          <div className="flex items-center gap-4">
+            <Link
+              to="/"
+              className="p-2 text-slate-600 hover:text-primary transition-colors"
+              title="Back to Home"
+            >
+              <LuArrowLeft className="w-6 h-6" />
+            </Link>
+          </div>
         </header>
 
         {/* Dynamic Page Content */}
