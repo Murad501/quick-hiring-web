@@ -62,6 +62,11 @@ export const jobApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Job"],
     }),
+    getCategories: builder.query<{ name: string; count: number }[], void>({
+      query: () => "/jobs/categories",
+      providesTags: ["Job"],
+      transformResponse: (res: any) => res.data,
+    }),
   }),
 });
 
@@ -74,4 +79,5 @@ export const {
   useUpdateJobStatusMutation,
   useUpdateJobMutation,
   useDeleteJobMutation,
+  useGetCategoriesQuery,
 } = jobApi;

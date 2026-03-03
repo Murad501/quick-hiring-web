@@ -11,9 +11,12 @@ export default function Jobs() {
   const [searchParams] = useSearchParams();
   const initialQuery = searchParams.get("query") || "";
   const initialType = searchParams.get("type") || "All";
+  const initialCategory = searchParams.get("category");
 
   const [searchQuery, setSearchQuery] = useState(initialQuery);
-  const [categoryFilters, setCategoryFilters] = useState<string[]>([]);
+  const [categoryFilters, setCategoryFilters] = useState<string[]>(
+    initialCategory ? initialCategory.split(",") : [],
+  );
   const [companyFilters, setCompanyFilters] = useState<string[]>([]);
   const [typeFilter, setTypeFilter] = useState(initialType);
   const [currentPage, setCurrentPage] = useState(1);

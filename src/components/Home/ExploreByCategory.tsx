@@ -10,54 +10,22 @@ import {
   LuUsers,
   LuArrowRight,
 } from "react-icons/lu";
+import { useGetCategoriesQuery } from "../../redux/services/job/jobApi";
 
-const CATEGORIES = [
-  { name: "Design", jobs: 235, icon: LuPenTool, path: "/jobs?category=design" },
-  {
-    name: "Sales",
-    jobs: 756,
-    icon: LuTrendingUp,
-    path: "/jobs?category=sales",
-  },
-  {
-    name: "Marketing",
-    jobs: 140,
-    icon: LuMegaphone,
-    path: "/jobs?category=marketing",
-  },
-  {
-    name: "Finance",
-    jobs: 325,
-    icon: LuWallet,
-    path: "/jobs?category=finance",
-  },
-  {
-    name: "Technology",
-    jobs: 436,
-    icon: LuMonitor,
-    path: "/jobs?category=technology",
-  },
-  {
-    name: "Engineering",
-    jobs: 542,
-    icon: LuCode,
-    path: "/jobs?category=engineering",
-  },
-  {
-    name: "Business",
-    jobs: 211,
-    icon: LuBriefcase,
-    path: "/jobs?category=business",
-  },
-  {
-    name: "Human Resource",
-    jobs: 346,
-    icon: LuUsers,
-    path: "/jobs?category=hr",
-  },
-];
+const CATEGORY_ICONS: Record<string, any> = {
+  Design: LuPenTool,
+  Sales: LuTrendingUp,
+  Marketing: LuMegaphone,
+  Finance: LuWallet,
+  Technology: LuMonitor,
+  Engineering: LuCode,
+  Business: LuBriefcase,
+  "Human Resource": LuUsers,
+};
 
 export default function ExploreByCategory() {
+  const { data: categories = [], isLoading } = useGetCategoriesQuery();
+
   return (
     <section className="py-16">
       <div className="common_container">
@@ -76,39 +44,60 @@ export default function ExploreByCategory() {
 
         {/* Categories Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          {CATEGORIES.map((category) => (
-            <Link
-              key={category.name}
-              to={category.path}
-              className="group flex md:flex-col items-center md:items-start p-4 md:p-8 border border-gray-100 hover:bg-primary hover:border-primary transition-all duration-300 bg-white"
-            >
-              {/* Icon */}
-              <div className="text-primary group-hover:text-white mb-0 md:mb-8 mr-4 md:mr-0 transition-colors">
-                <category.icon
-                  className="w-8 h-8 md:w-10 md:h-10"
-                  strokeWidth={1.5}
-                />
+          {isLoading ? (
+            // Loading Skeletons
+            [...Array(8)].map((_, i) => (
+              <div
+                key={i}
+                className="p-4 md:p-8 border border-gray-100 bg-white animate-pulse"
+              >
+                <div className="w-10 h-10 bg-slate-200 rounded mb-4"></div>
+                <div className="h-6 bg-slate-200 rounded w-3/4 mb-2"></div>
+                <div className="h-4 bg-slate-200 rounded w-1/2"></div>
               </div>
+            ))
+          ) : categories.length > 0 ? (
+            categories.map((category) => {
+              const Icon = CATEGORY_ICONS[category.name] || LuBriefcase;
+              return (
+                <Link
+                  key={category.name}
+                  to={`/jobs?category=${encodeURIComponent(category.name)}`}
+                  className="group flex md:flex-col items-center md:items-start p-4 md:p-8 border border-gray-100 hover:bg-primary hover:border-primary transition-all duration-300 bg-white"
+                >
+                  {/* Icon */}
+                  <div className="text-primary group-hover:text-white mb-0 md:mb-8 mr-4 md:mr-0 transition-colors">
+                    <Icon
+                      className="w-8 h-8 md:w-10 md:h-10"
+                      strokeWidth={1.5}
+                    />
+                  </div>
 
-              {/* Text Content */}
-              <div className="flex-1 w-full">
-                <h3 className="font-semibold text-slate-800 group-hover:text-white text-lg mb-1 md:mb-2 transition-colors">
-                  {category.name}
-                </h3>
-                <div className="flex items-center justify-between w-full text-slate-500 group-hover:text-white/90 text-sm md:text-base transition-colors">
-                  <span>{category.jobs} jobs available</span>
-                  <span className="hidden md:inline-block">
+                  {/* Text Content */}
+                  <div className="flex-1 w-full">
+                    <h3 className="font-semibold text-slate-800 group-hover:text-white text-lg mb-1 md:mb-2 transition-colors">
+                      {category.name}
+                    </h3>
+                    <div className="flex items-center justify-between w-full text-slate-500 group-hover:text-white/90 text-sm md:text-base transition-colors">
+                      <span>{category.count} jobs available</span>
+                      <span className="hidden md:inline-block">
+                        <LuArrowRight className="w-5 h-5" />
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Mobile Arrow */}
+                  <div className="md:hidden text-slate-800 group-hover:text-white ml-4 transition-colors">
                     <LuArrowRight className="w-5 h-5" />
-                  </span>
-                </div>
-              </div>
-
-              {/* Mobile Arrow */}
-              <div className="md:hidden text-slate-800 group-hover:text-white ml-4 transition-colors">
-                <LuArrowRight className="w-5 h-5" />
-              </div>
-            </Link>
-          ))}
+                  </div>
+                </Link>
+              );
+            })
+          ) : (
+            <div className="col-span-full py-10 text-center text-slate-500">
+              No categories found.
+            </div>
+          )}
         </div>
         <Link
           to="/jobs"
