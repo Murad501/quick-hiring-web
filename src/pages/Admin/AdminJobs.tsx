@@ -6,12 +6,18 @@ import {
   LuChevronLeft,
   LuChevronRight,
   LuX,
+  LuPencil,
+  LuTrash2,
+  LuEye,
 } from "react-icons/lu";
 import JobTypeDropdown from "../../components/Shared/JobTypeDropdown";
 import PostJobModal from "../../components/Admin/PostJobModal";
+import ConfirmationModal from "../../components/Shared/ConfirmationModal";
 import {
   useGetAdminJobsQuery,
   useUpdateJobStatusMutation,
+  useDeleteJobMutation,
+  type Job,
 } from "../../redux/api/jobApi";
 import { JOB_TYPES } from "../../data/constants";
 import { useDebounce } from "../../hooks/useDebounce";
@@ -24,6 +30,9 @@ export default function AdminJobs() {
   const [typeFilter, setTypeFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [jobToDelete, setJobToDelete] = useState<string | null>(null);
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   const queryParams: Record<string, any> = {
@@ -40,6 +49,20 @@ export default function AdminJobs() {
     isError,
   } = useGetAdminJobsQuery(queryParams);
   const [updateJobStatus] = useUpdateJobStatusMutation();
+  const [deleteJob, { isLoading: isDeleting }] = useDeleteJobMutation();
+
+  const handleDelete = async () => {
+    if (jobToDelete) {
+      try {
+        await deleteJob(jobToDelete).unwrap();
+        toast.success("Job deleted successfully");
+        setIsConfirmModalOpen(false);
+        setJobToDelete(null);
+      } catch (error: any) {
+        toast.error(error?.data?.message || "Failed to delete job");
+      }
+    }
+  };
 
   const handleStatusChange = async (jobId: string, newStatus: string) => {
     try {
@@ -73,7 +96,10 @@ export default function AdminJobs() {
           </p>
         </div>
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => {
+            setSelectedJob(null);
+            setIsModalOpen(true);
+          }}
           className="bg-primary text-white font-bold py-3 px-6 rounded-none hover:bg-primary/90 transition-all flex items-center gap-2"
         >
           <LuPlus className="w-5 h-5" />
@@ -239,12 +265,36 @@ export default function AdminJobs() {
                       </div>
                     </td>
                     <td className="py-4 px-6 text-right">
-                      <Link
-                        to={`/admin/jobs/${job.jobId}/applications`}
-                        className="inline-flex font-medium text-sm text-primary hover:text-white border border-primary hover:bg-primary px-4 py-2 rounded-none transition-colors"
-                      >
-                        View Applications
-                      </Link>
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => {
+                            setSelectedJob(job);
+                            setIsModalOpen(true);
+                          }}
+                          className="inline-flex items-center justify-center w-10 h-10 font-bold text-slate-600 hover:text-white border border-slate-200 hover:bg-slate-800 rounded-none transition-all"
+                          title="Edit Job"
+                        >
+                          <LuPencil className="w-5 h-5" />
+                        </button>
+                        <button
+                          onClick={() => {
+                            setJobToDelete(job.jobId);
+                            setIsConfirmModalOpen(true);
+                          }}
+                          disabled={isDeleting}
+                          className="inline-flex items-center justify-center w-10 h-10 font-bold text-red-500 hover:text-white border border-red-100 hover:bg-red-500 rounded-none transition-all disabled:opacity-50"
+                          title="Delete Job"
+                        >
+                          <LuTrash2 className="w-5 h-5" />
+                        </button>
+                        <Link
+                          to={`/admin/jobs/${job.jobId}/applications`}
+                          className="inline-flex items-center justify-center w-10 h-10 font-bold text-primary hover:text-white border border-primary/20 hover:bg-primary rounded-none transition-all"
+                          title="View Applications"
+                        >
+                          <LuEye className="w-5 h-5" />
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -283,10 +333,29 @@ export default function AdminJobs() {
         </div>
       )}
 
-      {/* Post Job Modal */}
+      {/* Post/Edit Job Modal */}
       <PostJobModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedJob(null);
+        }}
+        job={selectedJob}
+      />
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={isConfirmModalOpen}
+        onClose={() => {
+          setIsConfirmModalOpen(false);
+          setJobToDelete(null);
+        }}
+        onConfirm={handleDelete}
+        title="Delete Job Listing"
+        message="Are you sure you want to delete this job? This action cannot be undone and all associated applications will be permanently removed."
+        confirmText="Delete Job"
+        confirmColor="red"
+        isLoading={isDeleting}
       />
     </div>
   );
