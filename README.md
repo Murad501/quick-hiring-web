@@ -1,73 +1,72 @@
-# React + TypeScript + Vite
+# Quick Hire - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, responsive job portal dashboard built with React, Vite, and Tailwind CSS.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Dynamic Job Discovery**: Browse and search jobs by keyword, category, company, or type.
+- **Category Explorer**: Live job counts for different sectors on the homepage.
+- **Seamless Application**: Easy-to-use job application forms.
+- **Admin Dashboard**:
+  - **Overview**: High-level statistics.
+  - **Job Management**: Create, edit, and delete job postings with dynamic sections.
+  - **Application Management**: Track and update the status of incoming applications.
+- **Security**: Protected admin routes and automatic session expiration handling.
+- **Toast Notifications**: Interactive feedback for user actions.
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+- **Framework**: React 19 (Vite)
+- **Styling**: Tailwind CSS
+- **State Management**: Redux Toolkit & RTK Query
+- **State Persistence**: Redux Persist
+- **Icons**: React Icons (Lucide)
+- **Forms**: React Hook Form
+- **Routing**: React Router DOM
 
-## Expanding the ESLint configuration
+## Prerequisites
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Node.js (v18 or higher)
+- Yarn or npm
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Getting Started
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### 1. Installation
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+cd quick-hire-web
+yarn install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2. Environment Variables
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Create a `.env` file in the root directory and add:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```env
+# URL of your running backend (without trailing slash)
+VITE_API_URL=https://quick-hiring-server.onrender.com/api/v1
 ```
+
+### 3. Running the App
+
+**Development Mode:**
+
+```bash
+yarn dev
+```
+
+**Production Build:**
+
+```bash
+yarn build
+yarn preview
+```
+
+## Dashboard Access
+
+To access the admin features, use the following credentials (default):
+
+- **Email**: `admin@quick-hiring.com`
+- **Password**: `admin@quick-hiring.com`
+
+---
