@@ -46,7 +46,7 @@ export default function LatestJobs() {
             {jobResponse.data.slice(0, 6).map((job: Job) => (
               <div
                 key={job.jobId}
-                className="flex flex-col sm:flex-row items-start sm:items-center gap-6 p-6 md:p-8 bg-white border border-gray-100 hover:shadow-md transition-shadow duration-300"
+                className="flex flex-col sm:flex-row items-start sm:items-center gap-6 p-6 md:p-8 bg-white border border-gray-100 hover: transition-shadow duration-300"
               >
                 {/* Job Information */}
                 <div className="flex-1 w-full">

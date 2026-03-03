@@ -12,7 +12,7 @@ export default function JobCard({ job }: JobCardProps) {
   return (
     <Link
       to={`/jobs/${job.jobId}`}
-      className="block p-6 border border-gray-200 hover:border-primary hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-white cursor-pointer group rounded-xl"
+      className="block p-6 border border-gray-200 hover:border-primary hover: hover:-translate-y-1 transition-all duration-300 bg-white cursor-pointer group "
     >
       {/* Title */}
       <div className="mb-1">

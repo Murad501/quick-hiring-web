@@ -211,7 +211,7 @@ export default function AllApplications() {
                             setSelectedApplication(app);
                             setIsModalOpen(true);
                           }}
-                          className="bg-primary text-white hover:bg-primary/90 transition-colors px-3 py-1.5 rounded-lg text-sm font-medium"
+                          className="bg-primary text-white hover:bg-primary/90 transition-colors px-3 py-1.5  text-sm font-medium"
                         >
                           View
                         </button>

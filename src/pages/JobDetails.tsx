@@ -47,7 +47,7 @@ export default function JobDetails() {
         </p>
         <Link
           to="/jobs"
-          className="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
+          className="bg-primary text-white px-6 py-3  font-medium hover:bg-primary/90 transition-colors"
         >
           Browse All Jobs
         </Link>
@@ -162,12 +162,12 @@ export default function JobDetails() {
 
           {/* Bottom / Form Area */}
           <div className="w-full">
-            <div className="bg-white p-8 border border-gray-200 shadow-xl shadow-indigo-100/30">
+            <div className="bg-white p-8 border border-gray-200  shadow-indigo-100/30">
               <h3 className="text-2xl font-semibold text-slate-800 mb-8 text-center">
                 Apply for this role
               </h3>
               {isSubmitted ? (
-                <div className="bg-green-50 text-green-700 p-6 rounded-xl border border-green-200 text-center">
+                <div className="bg-green-50 text-green-700 p-6  border border-green-200 text-center">
                   <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
                     <svg
                       className="w-6 h-6 text-green-600"
@@ -210,7 +210,7 @@ export default function JobDetails() {
                       onChange={(e) =>
                         setFormData({ ...formData, name: e.target.value })
                       }
-                      className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors"
+                      className="w-full px-4 py-3  border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors"
                     />
                   </div>
 
@@ -231,7 +231,7 @@ export default function JobDetails() {
                       onChange={(e) =>
                         setFormData({ ...formData, email: e.target.value })
                       }
-                      className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors"
+                      className="w-full px-4 py-3  border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors"
                     />
                   </div>
 
@@ -252,7 +252,7 @@ export default function JobDetails() {
                       onChange={(e) =>
                         setFormData({ ...formData, resumeUrl: e.target.value })
                       }
-                      className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors"
+                      className="w-full px-4 py-3  border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors"
                     />
                   </div>
 
@@ -272,7 +272,7 @@ export default function JobDetails() {
                       onChange={(e) =>
                         setFormData({ ...formData, coverNote: e.target.value })
                       }
-                      className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors resize-none"
+                      className="w-full px-4 py-3  border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors resize-none"
                     ></textarea>
                   </div>
 
@@ -281,7 +281,7 @@ export default function JobDetails() {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full md:w-auto md:min-w-[200px] md:mx-auto flex justify-center items-center gap-2 bg-primary text-white font-bold py-4 px-8 rounded-lg hover:bg-primary/90 transition-all hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed"
+                      className="w-full md:w-auto md:min-w-[200px] md:mx-auto flex justify-center items-center gap-2 bg-primary text-white font-bold py-4 px-8  hover:bg-primary/90 transition-all hover: hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed"
                     >
                       {isSubmitting ? (
                         <>

@@ -30,7 +30,7 @@ export const JOBS: Job[] = [
     type: "Full Time",
     tags: ["Marketing", "Design"],
     logo: (
-      <div className="w-12 h-12 rounded bg-white flex items-center justify-center text-2xl font-black italic text-slate-800 border border-gray-100 shadow-sm">
+      <div className="w-12 h-12 rounded bg-white flex items-center justify-center text-2xl font-black italic text-slate-800 border border-gray-100 ">
         R
       </div>
     ),

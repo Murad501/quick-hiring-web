@@ -54,7 +54,7 @@ export default function Hero() {
           </p>
 
           {/* Search Box */}
-          <div className="bg-white p-2 md:p-3 rounded-xl shadow-lg shadow-indigo-100/50 flex flex-col md:flex-row items-center gap-4 mb-6 relative z-30 lg:w-[130%] xl:w-[135%]">
+          <div className="bg-white p-2 md:p-3   shadow-indigo-100/50 flex flex-col md:flex-row items-center gap-4 mb-6 relative z-30 lg:w-[130%] xl:w-[135%]">
             {/* Keyword Input */}
             <div className="flex-1 flex items-center gap-3 px-4 py-3 md:py-2 w-full border-b md:border-b-0 md:border-r border-gray-100">
               <LuSearch className="w-5 h-5 text-slate-400 shrink-0" />
@@ -79,7 +79,7 @@ export default function Hero() {
             {/* Search Button */}
             <button
               onClick={handleSearch}
-              className="w-full md:w-fit bg-primary text-white font-bold py-4 px-10 rounded-lg hover:bg-primary/90 transition-colors shrink-0"
+              className="w-full md:w-fit bg-primary text-white font-bold py-4 px-10  hover:bg-primary/90 transition-colors shrink-0"
             >
               Search my job
             </button>

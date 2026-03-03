@@ -216,7 +216,7 @@ export default function AdminJobs() {
                         onChange={(e) =>
                           handleStatusChange(job.jobId, e.target.value)
                         }
-                        className={`text-xs font-semibold px-2 py-1 border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer ${
+                        className={`text-xs font-semibold px-2 py-1 border  focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer ${
                           job.status === "closed"
                             ? "bg-red-50 border-red-200 text-red-600"
                             : "bg-green-50 border-green-200 text-green-600"

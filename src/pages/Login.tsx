@@ -48,7 +48,7 @@ export default function Login() {
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          <div className="space-y-4 rounded-md shadow-sm">
+          <div className="space-y-4  ">
             <div>
               <label
                 htmlFor="email"
@@ -67,7 +67,7 @@ export default function Login() {
                     message: "Invalid email address",
                   },
                 })}
-                className={`mt-1 appearance-none relative block w-full px-3 py-3 border ${errors.email ? "border-red-300" : "border-gray-300"} placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm`}
+                className={`mt-1 appearance-none relative block w-full px-3 py-3 border ${errors.email ? "border-red-300" : "border-gray-300"} placeholder-gray-500 text-gray-900  focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm`}
                 placeholder="you@example.com"
               />
               {errors.email && (
@@ -96,7 +96,7 @@ export default function Login() {
                       message: "Password must be at least 6 characters",
                     },
                   })}
-                  className={`appearance-none block w-full px-3 py-3 border ${errors.password ? "border-red-300" : "border-gray-300"} placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary sm:text-sm pr-10`}
+                  className={`appearance-none block w-full px-3 py-3 border ${errors.password ? "border-red-300" : "border-gray-300"} placeholder-gray-500 text-gray-900  focus:outline-none focus:ring-primary focus:border-primary sm:text-sm pr-10`}
                   placeholder="••••••••"
                 />
                 <button
@@ -123,7 +123,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={isLoading}
-              className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white ${isLoading ? "bg-primary/70 cursor-not-allowed" : "bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"} transition-colors duration-200`}
+              className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium  text-white ${isLoading ? "bg-primary/70 cursor-not-allowed" : "bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"} transition-colors duration-200`}
             >
               {isLoading ? (
                 <span className="flex items-center">

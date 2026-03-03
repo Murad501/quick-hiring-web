@@ -41,7 +41,7 @@ export default function Navbar() {
             {user ? (
               <Link
                 to="/admin"
-                className="font-medium text-white bg-primary px-6 py-2 hover:bg-primary-dark transition-all duration-300 rounded-md"
+                className="font-medium text-white bg-primary px-6 py-2 hover:bg-primary-dark transition-all duration-300 "
               >
                 Dashboard
               </Link>
@@ -88,7 +88,7 @@ export default function Navbar() {
 
       {/* Mobile Dropdown Menus */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-t border-gray-100 bg-white shadow-sm absolute w-[300px] z-50 right-1">
+        <div className="md:hidden border-t border-gray-100 bg-white  absolute w-[300px] z-50 right-1">
           <div className="flex flex-col">
             {NAV_LINKS.map((link) => (
               <Link
@@ -104,7 +104,7 @@ export default function Navbar() {
               {user ? (
                 <Link
                   to="/admin"
-                  className="w-full text-center font-medium text-white bg-primary border px-6 py-2.5 transition-all duration-300 rounded-md"
+                  className="w-full text-center font-medium text-white bg-primary border px-6 py-2.5 transition-all duration-300 "
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Dashboard

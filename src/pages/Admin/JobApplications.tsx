@@ -162,7 +162,7 @@ export default function JobApplications() {
                         <div className="h-4 bg-slate-200 rounded w-20"></div>
                       </td>
                       <td className="py-4 px-6 text-right">
-                        <div className="h-8 w-10 bg-slate-200 rounded-lg inline-block"></div>
+                        <div className="h-8 w-10 bg-slate-200  inline-block"></div>
                       </td>
                     </tr>
                   ))}
@@ -231,7 +231,7 @@ export default function JobApplications() {
                             setSelectedApplication(app);
                             setIsModalOpen(true);
                           }}
-                          className="bg-primary text-white hover:bg-primary/90 transition-colors px-3 py-1.5 rounded-lg text-sm font-medium"
+                          className="bg-primary text-white hover:bg-primary/90 transition-colors px-3 py-1.5  text-sm font-medium"
                         >
                           View
                         </button>

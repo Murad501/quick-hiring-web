@@ -55,7 +55,7 @@ export default function JobTypeDropdown({
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-full bg-white  shadow-xl shadow-indigo-100/40 border border-gray-100 z-50">
+        <div className="absolute top-full left-0 mt-2 w-full bg-white border border-gray-100 z-50">
           {options.map((option) => {
             const displayLabel = option === "All" ? "All Job Types" : option;
             return (

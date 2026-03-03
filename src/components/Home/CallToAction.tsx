@@ -32,7 +32,7 @@ export default function CallToAction() {
           <img
             src="/admin-dashboard.png"
             alt="Admin Dashboard Preview"
-            className="w-full h-auto object-contain drop-shadow-2xl  md:mt-20"
+            className="w-full h-auto object-contain drop-  md:mt-20"
           />
         </div>
       </div>

@@ -44,6 +44,11 @@ export const jobApi = baseApi.injectEndpoints({
       providesTags: (_result, _error, id) => [{ type: "Job", id }],
       transformResponse: (res: any) => res.data || res,
     }),
+    getCompanies: builder.query<{ name: string; count: number }[], void>({
+      query: () => "/jobs/companies",
+      providesTags: ["Job"],
+      transformResponse: (res: any) => res.data,
+    }),
     getAdminJobs: builder.query<JobResponse, Record<string, any>>({
       query: (params) => ({
         url: "/jobs/admin",
@@ -76,6 +81,7 @@ export const jobApi = baseApi.injectEndpoints({
 export const {
   useGetAllJobsQuery,
   useGetJobByIdQuery,
+  useGetCompaniesQuery,
   useCreateJobMutation,
   useGetAdminJobsQuery,
   useUpdateJobStatusMutation,

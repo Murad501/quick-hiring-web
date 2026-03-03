@@ -77,7 +77,7 @@ export default function ApplicationModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
+      <div className="bg-white   w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-100">
           <div>
@@ -144,7 +144,7 @@ export default function ApplicationModal({
 
           <div className="mb-2">
             <p className="text-sm font-bold text-slate-500 mb-2">Cover Note</p>
-            <div className="bg-slate-50 p-4 rounded-xl border border-gray-100 text-slate-700 text-sm leading-relaxed whitespace-pre-wrap">
+            <div className="bg-slate-50 p-4  border border-gray-100 text-slate-700 text-sm leading-relaxed whitespace-pre-wrap">
               {application.coverNote ||
                 "No cover note provided by the candidate."}
             </div>
@@ -157,7 +157,7 @@ export default function ApplicationModal({
             <button
               disabled={isLoading}
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-bold transition-colors ${getStatusColor(application.status)} ${isLoading ? "opacity-70 cursor-not-allowed" : "hover:opacity-80"}`}
+              className={`flex items-center gap-2 px-4 py-2  border text-sm font-bold transition-colors ${getStatusColor(application.status)} ${isLoading ? "opacity-70 cursor-not-allowed" : "hover:opacity-80"}`}
             >
               {isLoading ? (
                 <>
@@ -204,7 +204,7 @@ export default function ApplicationModal({
             </button>
 
             {isDropdownOpen && !isLoading && (
-              <div className="absolute bottom-full right-0 mb-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden transform origin-bottom-right">
+              <div className="absolute bottom-full right-0 mb-2 w-48 bg-white   border border-gray-100 overflow-hidden transform origin-bottom-right">
                 {statuses.map((status) => (
                   <button
                     key={status.value}

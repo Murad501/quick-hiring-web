@@ -89,7 +89,7 @@ export default function Jobs() {
                 placeholder="Search by job title, description, or company..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                className="w-full pl-12 pr-4 py-3  border border-gray-200 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
               />
             </div>
 
@@ -99,7 +99,7 @@ export default function Jobs() {
                 value={typeFilter}
                 onChange={setTypeFilter}
                 options={types}
-                triggerClassName="w-full flex items-center justify-between py-3 px-4 rounded-lg border border-gray-200 bg-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                triggerClassName="w-full flex items-center justify-between py-3 px-4  border border-gray-200 bg-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
               />
             </div>
           </div>
@@ -181,7 +181,7 @@ export default function Jobs() {
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="block p-6 border border-gray-200 bg-white rounded-xl h-full flex-col animate-pulse"
+                className="block p-6 border border-gray-200 bg-white  h-full flex-col animate-pulse"
               >
                 <div className="h-6 bg-slate-200 rounded w-3/4 mb-3"></div>
                 <div className="h-4 bg-slate-200 rounded w-1/2 mb-6"></div>
@@ -220,7 +220,7 @@ export default function Jobs() {
             ))}
           </div>
         ) : !isLoading && !isError ? (
-          <div className="bg-white py-16 text-center rounded-xl border border-gray-100 shadow-sm mb-12">
+          <div className="bg-white py-16 text-center  border border-gray-100  mb-12">
             <p className="text-xl text-slate-500 font-medium mb-2">
               No jobs found matching your criteria.
             </p>

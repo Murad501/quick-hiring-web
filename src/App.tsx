@@ -15,6 +15,7 @@ import JobApplications from "./pages/Admin/JobApplications";
 import AllApplications from "./pages/Admin/AllApplications";
 import { Toaster } from "react-hot-toast";
 import ScrollToTop from "./components/Shared/ScrollToTop";
+import CompanyDetails from "./pages/CompanyDetails";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/jobs/:id" element={<JobDetails />} />
           <Route path="/companies" element={<Companies />} />
+          <Route path="/companies/:companyName" element={<CompanyDetails />} />
           <Route path="/login" element={<Login />} />
         </Route>
 
