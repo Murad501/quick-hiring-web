@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import { LuArrowRight } from "react-icons/lu";
 import { getTagStyles } from "../../utils/jobUtils";
-import { useGetAllJobsQuery } from "../../redux/api/jobApi";
-import type { Job } from "../../redux/api/jobApi";
+import { useGetAllJobsQuery } from "../../redux/services/job/jobApi";
+import type { IJob } from "../../interface/job.interface";
 
 export default function LatestJobs() {
   const {
@@ -43,7 +43,7 @@ export default function LatestJobs() {
         {/* Grid */}
         {jobResponse?.data && !isLoading && !isError && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {jobResponse.data.slice(0, 6).map((job: Job) => (
+            {jobResponse.data.slice(0, 6).map((job: IJob) => (
               <div
                 key={job.jobId}
                 className="flex flex-col sm:flex-row items-start sm:items-center gap-6 p-6 md:p-8 bg-white border border-gray-100 hover: transition-shadow duration-300"

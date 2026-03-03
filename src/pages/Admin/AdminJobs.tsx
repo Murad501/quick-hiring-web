@@ -17,11 +17,11 @@ import {
   useGetAdminJobsQuery,
   useUpdateJobStatusMutation,
   useDeleteJobMutation,
-  type Job,
-} from "../../redux/api/jobApi";
+} from "../../redux/services/job/jobApi";
 import { JOB_TYPES } from "../../data/constants";
 import { useDebounce } from "../../hooks/useDebounce";
 import toast from "react-hot-toast";
+import type { IJob } from "../../interface/job.interface";
 
 const ITEMS_PER_PAGE = 8;
 
@@ -30,7 +30,7 @@ export default function AdminJobs() {
   const [typeFilter, setTypeFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [selectedJob, setSelectedJob] = useState<IJob | null>(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [jobToDelete, setJobToDelete] = useState<string | null>(null);
   const debouncedSearchQuery = useDebounce(searchQuery, 500);

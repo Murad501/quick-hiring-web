@@ -1,11 +1,11 @@
 import React from "react";
-import type { Application } from "../../redux/api/applicationApi";
-import { useUpdateApplicationStatusMutation } from "../../redux/api/applicationApi";
+import type { IApplication } from "../../interface/application.interface";
+import { useUpdateApplicationStatusMutation } from "../../redux/services/application/applicationApi";
 import { LuX, LuFileText, LuMail } from "react-icons/lu";
 import toast from "react-hot-toast";
 
 interface ApplicationModalProps {
-  application: Application | null;
+  application: IApplication | null;
   isOpen: boolean;
   onClose: () => void;
 }

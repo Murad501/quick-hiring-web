@@ -1,8 +1,8 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { LuSearch, LuX, LuExternalLink } from "react-icons/lu";
-import { useGetAllApplicationsQuery } from "../../redux/api/applicationApi";
-import type { Application } from "../../redux/api/applicationApi";
+import { useGetAllApplicationsQuery } from "../../redux/services/application/applicationApi";
+import type { IApplication } from "../../interface/application.interface";
 import { useDebounce } from "../../hooks/useDebounce";
 import ApplicationModal from "../../components/Admin/ApplicationModal";
 
@@ -10,7 +10,7 @@ export default function AllApplications() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [selectedApplication, setSelectedApplication] =
-    useState<Application | null>(null);
+    useState<IApplication | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const {

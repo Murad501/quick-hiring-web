@@ -3,7 +3,7 @@ import JobCard from "../components/Shared/JobCard";
 import JobTypeDropdown from "../components/Shared/JobTypeDropdown";
 import { LuSearch, LuChevronLeft, LuChevronRight, LuX } from "react-icons/lu";
 import { useSearchParams } from "react-router-dom";
-import { useGetAllJobsQuery } from "../redux/api/jobApi";
+import { useGetAllJobsQuery } from "../redux/services/job/jobApi";
 import { JOB_CATEGORIES, JOB_COMPANIES, JOB_TYPES } from "../data/constants";
 import { useDebounce } from "../hooks/useDebounce";
 

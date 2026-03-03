@@ -1,9 +1,9 @@
-import { type Job } from "../../redux/api/jobApi";
+import type { IJob } from "../../interface/job.interface";
 import { Link } from "react-router-dom";
 import { LuArrowRight } from "react-icons/lu";
 
 interface JobCardProps {
-  job: Job;
+  job: IJob;
 }
 
 import { getTagStyles } from "../../utils/jobUtils";
@@ -31,7 +31,7 @@ export default function JobCard({ job }: JobCardProps) {
 
       {/* Tags */}
       <div className="flex flex-wrap gap-2 mb-6">
-        {job.tags.slice(0, 3).map((tag, index) => (
+        {job.tags.slice(0, 3).map((tag: string, index: number) => (
           <span
             key={tag}
             className={`px-3 py-1 text-xs font-semibold rounded-full ${getTagStyles(

@@ -1,6 +1,6 @@
 import { LuBriefcase } from "react-icons/lu";
 import { Link } from "react-router-dom";
-import { useGetCompaniesQuery } from "../redux/api/jobApi";
+import { useGetCompaniesQuery } from "../redux/services/job/jobApi";
 
 export default function Companies() {
   const { data: companies, isLoading, isError } = useGetCompaniesQuery();

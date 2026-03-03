@@ -1,45 +1,17 @@
-import { baseApi } from "./baseApi";
-
-export interface Job {
-  _id: string;
-  title: string;
-  company: string;
-  location: string;
-  category: string;
-  description: string;
-  type: string;
-  tags: string[];
-  status: "open" | "closed";
-  sections: {
-    title: string;
-    values: string[];
-  }[];
-  jobId: string;
-  applicationCount?: number;
-}
-
-export interface JobResponse {
-  data: Job[];
-  meta: {
-    page: number;
-    limit: number;
-    total: number;
-  };
-  message: string;
-  success: boolean;
-  statusCode: number;
-}
+import { baseApi } from "../../api/baseApi";
+import type { IResponse } from "../../../interface/common.interface";
+import type { IJob } from "../../../interface/job.interface";
 
 export const jobApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getAllJobs: builder.query<JobResponse, Record<string, any>>({
+    getAllJobs: builder.query<IResponse<IJob>, Record<string, any>>({
       query: (params) => ({
         url: "/jobs",
         params,
       }),
       providesTags: ["Job"],
     }),
-    getJobById: builder.query<Job, string>({
+    getJobById: builder.query<IJob, string>({
       query: (id) => `/jobs/${id}`,
       providesTags: (_result, _error, id) => [{ type: "Job", id }],
       transformResponse: (res: any) => res.data || res,
@@ -49,14 +21,14 @@ export const jobApi = baseApi.injectEndpoints({
       providesTags: ["Job"],
       transformResponse: (res: any) => res.data,
     }),
-    getAdminJobs: builder.query<JobResponse, Record<string, any>>({
+    getAdminJobs: builder.query<IResponse<IJob>, Record<string, any>>({
       query: (params) => ({
         url: "/jobs/admin",
         params,
       }),
       providesTags: ["Job"],
     }),
-    createJob: builder.mutation<Job, Partial<Job>>({
+    createJob: builder.mutation<IJob, Partial<IJob>>({
       query: (body) => ({
         url: "/jobs",
         method: "POST",
@@ -65,7 +37,7 @@ export const jobApi = baseApi.injectEndpoints({
       invalidatesTags: ["Job"],
     }),
     updateJobStatus: builder.mutation<
-      Job,
+      IJob,
       { jobId: string; status: "open" | "closed" }
     >({
       query: ({ jobId, status }) => ({
@@ -75,7 +47,7 @@ export const jobApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Job"],
     }),
-    updateJob: builder.mutation<Job, { jobId: string; data: Partial<Job> }>({
+    updateJob: builder.mutation<IJob, { jobId: string; data: Partial<IJob> }>({
       query: ({ jobId, data }) => ({
         url: `/jobs/${jobId}`,
         method: "PATCH",

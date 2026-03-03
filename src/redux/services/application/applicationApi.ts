@@ -1,35 +1,14 @@
-import { baseApi } from "./baseApi";
+import { baseApi } from "../../api/baseApi";
+import type { IApplication } from "../../../interface/application.interface";
+import type { IResponse } from "../../../interface/common.interface";
 
-export interface Application {
-  _id: string;
-  applicationId: string;
-  jobId: string;
-  name: string;
-  email: string;
-  resumeLink: string;
-  coverNote: string;
-  status: "new" | "reviewed" | "interviewing" | "rejected" | "hired";
-  createdAt: string;
-  jobTitle?: string;
-  jobCompany?: string;
-}
 
-export interface ApplicationResponse {
-  data: Application[];
-  meta: {
-    page: number;
-    limit: number;
-    total: number;
-  };
-  message: string;
-  success: boolean;
-  statusCode: number;
-}
+
 
 export const applicationApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllApplications: builder.query<
-      ApplicationResponse,
+      IResponse<IApplication>,
       Record<string, any> | void
     >({
       query: (params) => ({
@@ -38,7 +17,7 @@ export const applicationApi = baseApi.injectEndpoints({
       }),
       providesTags: ["Application"],
     }),
-    createApplication: builder.mutation<any, Partial<Application>>({
+    createApplication: builder.mutation<any, Partial<IApplication>>({
       query: (body) => ({
         url: "/applications",
         method: "POST",

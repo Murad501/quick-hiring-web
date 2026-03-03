@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getTagStyles } from "../utils/jobUtils";
-import { useGetJobByIdQuery } from "../redux/api/jobApi";
-import { useCreateApplicationMutation } from "../redux/api/applicationApi";
+import { useGetJobByIdQuery } from "../redux/services/job/jobApi";
+import { useCreateApplicationMutation } from "../redux/services/application/applicationApi";
 import { LuChevronLeft, LuMapPin, LuBriefcase, LuLoader } from "react-icons/lu";
 import toast from "react-hot-toast";
 

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { LuBriefcase, LuUsers, LuTrendingUp } from "react-icons/lu";
-import { useGetAdminJobsQuery } from "../../redux/api/jobApi";
-import { useGetAllApplicationsQuery } from "../../redux/api/applicationApi";
+import { useGetAdminJobsQuery } from "../../redux/services/job/jobApi";
+import { useGetAllApplicationsQuery } from "../../redux/services/application/applicationApi";
 
 export default function Overview() {
   const { data: jobResponse, isLoading: jobsLoading } = useGetAdminJobsQuery({

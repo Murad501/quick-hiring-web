@@ -5,13 +5,13 @@ import {
   useCreateJobMutation,
   useGetCompaniesQuery,
   useUpdateJobMutation,
-  type Job,
-} from "../../redux/api/jobApi";
+} from "../../redux/services/job/jobApi";
+import type { IJob } from "../../interface/job.interface";
 
 interface PostJobModalProps {
   isOpen: boolean;
   onClose: () => void;
-  job?: Job | null;
+  job?: IJob | null;
 }
 
 export default function PostJobModal({

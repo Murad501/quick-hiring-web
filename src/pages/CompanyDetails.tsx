@@ -8,12 +8,12 @@ import {
   LuX,
   LuChevronRight,
 } from "react-icons/lu";
-import { useGetAllJobsQuery } from "../redux/api/jobApi";
+import { useGetAllJobsQuery } from "../redux/services/job/jobApi";
 import JobCard from "../components/Shared/JobCard";
 import JobTypeDropdown from "../components/Shared/JobTypeDropdown";
 import { JOB_CATEGORIES, JOB_TYPES } from "../data/constants";
 import { useDebounce } from "../hooks/useDebounce";
-import type { Job } from "../redux/api/jobApi";
+import type { IJob } from "../interface/job.interface";
 
 export default function CompanyDetails() {
   const { companyName } = useParams<{ companyName: string }>();
@@ -42,7 +42,7 @@ export default function CompanyDetails() {
     isError,
   } = useGetAllJobsQuery(queryParams);
 
-  const jobs: Job[] = jobResponse?.data || [];
+  const jobs: IJob[] = jobResponse?.data || [];
   const TOTAL_JOBS = jobResponse?.meta?.total || 0;
   const totalPages = Math.ceil(TOTAL_JOBS / itemsPerPage) || 1;
 

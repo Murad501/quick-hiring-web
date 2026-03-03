@@ -1,15 +1,15 @@
 import { Link } from "react-router-dom";
 import { LuArrowRight } from "react-icons/lu";
 import JobCard from "../Shared/JobCard";
-import { useGetAllJobsQuery } from "../../redux/api/jobApi";
-import type { Job } from "../../redux/api/jobApi";
+import { useGetAllJobsQuery } from "../../redux/services/job/jobApi";
+import type { IJob } from "../../interface/job.interface";
 
 export default function FeaturedJobs() {
   const {
     data: jobResponse,
     isLoading,
     isError,
-  } = useGetAllJobsQuery({ limit:  6 });
+  } = useGetAllJobsQuery({ limit: 6 });
 
   return (
     <section className="py-16">
@@ -43,7 +43,7 @@ export default function FeaturedJobs() {
         {/* Grid */}
         {jobResponse?.data && !isLoading && !isError && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {jobResponse.data.slice(0, 6).map((job: Job) => (
+            {jobResponse.data.slice(0, 6).map((job: IJob) => (
               <JobCard key={job._id || job.jobId} job={job} />
             ))}
           </div>
