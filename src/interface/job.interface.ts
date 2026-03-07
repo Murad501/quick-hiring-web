@@ -14,5 +14,5 @@ export interface IJob {
   }[];
   jobId: string;
   applicationCount?: number;
+  isFeatured?: boolean;
 }
-

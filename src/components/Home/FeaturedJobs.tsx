@@ -9,7 +9,7 @@ export default function FeaturedJobs() {
     data: jobResponse,
     isLoading,
     isError,
-  } = useGetAllJobsQuery({ limit: 6 });
+  } = useGetAllJobsQuery({ limit: 6, isFeatured: true });
 
   return (
     <section className="py-16">

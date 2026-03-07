@@ -47,6 +47,17 @@ export const jobApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Job"],
     }),
+    updateJobFeaturedStatus: builder.mutation<
+      IJob,
+      { jobId: string; isFeatured: boolean }
+    >({
+      query: ({ jobId, isFeatured }) => ({
+        url: `/jobs/${jobId}`,
+        method: "PATCH",
+        body: { isFeatured },
+      }),
+      invalidatesTags: ["Job"],
+    }),
     updateJob: builder.mutation<IJob, { jobId: string; data: Partial<IJob> }>({
       query: ({ jobId, data }) => ({
         url: `/jobs/${jobId}`,
@@ -77,6 +88,7 @@ export const {
   useCreateJobMutation,
   useGetAdminJobsQuery,
   useUpdateJobStatusMutation,
+  useUpdateJobFeaturedStatusMutation,
   useUpdateJobMutation,
   useDeleteJobMutation,
   useGetCategoriesQuery,

@@ -16,6 +16,7 @@ import ConfirmationModal from "../../components/Shared/ConfirmationModal";
 import {
   useGetAdminJobsQuery,
   useUpdateJobStatusMutation,
+  useUpdateJobFeaturedStatusMutation,
   useDeleteJobMutation,
 } from "../../redux/services/job/jobApi";
 import { JOB_TYPES } from "../../data/constants";
@@ -49,6 +50,7 @@ export default function AdminJobs() {
     isError,
   } = useGetAdminJobsQuery(queryParams);
   const [updateJobStatus] = useUpdateJobStatusMutation();
+  const [updateJobFeaturedStatus] = useUpdateJobFeaturedStatusMutation();
   const [deleteJob, { isLoading: isDeleting }] = useDeleteJobMutation();
 
   const handleDelete = async () => {
@@ -75,6 +77,24 @@ export default function AdminJobs() {
       toast.error(error?.data?.message || "Failed to update job status");
     }
   };
+
+  const handleFeaturedToggle = async (
+    jobId: string,
+    currentFeatured: boolean,
+  ) => {
+    try {
+      await updateJobFeaturedStatus({
+        jobId,
+        isFeatured: !currentFeatured,
+      }).unwrap();
+      toast.success(
+        `Job is ${!currentFeatured ? "now featured" : "no longer featured"}`,
+      );
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to update featured status");
+    }
+  };
+
   const JOBS = jobResponse?.data || [];
   const TOTAL_JOBS = jobResponse?.meta?.total || 0;
 
@@ -159,6 +179,7 @@ export default function AdminJobs() {
                 <th className="py-4 px-6 font-medium">Location</th>
                 <th className="py-4 px-6 font-medium">Job Type</th>
                 <th className="py-4 px-6 font-medium">Status</th>
+                <th className="py-4 px-6 font-medium">Featured</th>
                 <th className="py-4 px-6 font-medium">Applications</th>
                 <th className="py-4 px-6 font-medium text-right">Actions</th>
               </tr>
@@ -183,6 +204,9 @@ export default function AdminJobs() {
                       </td>
                       <td className="py-4 px-6">
                         <div className="h-4 bg-slate-200 rounded w-28"></div>
+                      </td>
+                      <td className="py-4 px-6">
+                        <div className="h-6 w-12 bg-slate-200 rounded-full inline-block"></div>
                       </td>
                       <td className="py-4 px-6">
                         <div className="h-4 bg-slate-200 rounded w-28"></div>
@@ -251,6 +275,27 @@ export default function AdminJobs() {
                         <option value="open">Open</option>
                         <option value="closed">Closed</option>
                       </select>
+                    </td>
+                    <td className="py-4 px-6">
+                      <button
+                        onClick={() =>
+                          handleFeaturedToggle(job.jobId, !!job.isFeatured)
+                        }
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+                          job.isFeatured ? "bg-primary" : "bg-slate-200"
+                        }`}
+                        title={
+                          job.isFeatured
+                            ? "Remove from featured"
+                            : "Set as featured"
+                        }
+                      >
+                        <span
+                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                            job.isFeatured ? "translate-x-6" : "translate-x-1"
+                          }`}
+                        />
+                      </button>
                     </td>
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-2">
