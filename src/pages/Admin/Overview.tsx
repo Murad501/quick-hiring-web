@@ -1,35 +1,36 @@
 import { Link } from "react-router-dom";
 import { LuBriefcase, LuUsers, LuTrendingUp } from "react-icons/lu";
 import { useGetAdminJobsQuery } from "../../redux/services/job/jobApi";
-import { useGetAllApplicationsQuery } from "../../redux/services/application/applicationApi";
+import { useGetAdminOverviewStatsQuery } from "../../redux/services/admin/adminApi";
 
 export default function Overview() {
   const { data: jobResponse, isLoading: jobsLoading } = useGetAdminJobsQuery({
     limit: 3, // only load 3 recent jobs for the UI block
   });
-  const { data: appResponse, isLoading: appsLoading } =
-    useGetAllApplicationsQuery();
+  const { data: statsData, isLoading: statsLoading } =
+    useGetAdminOverviewStatsQuery();
 
   const JOBS = jobResponse?.data || [];
-  const TOTAL_JOBS = jobResponse?.meta?.total || 0;
-  const TOTAL_APPLICATIONS = appResponse?.meta?.total || 0;
+  const TOTAL_JOBS = statsData?.totalJobs || 0;
+  const TOTAL_APPLICATIONS = statsData?.totalApplications || 0;
+  const NEW_CANDIDATES = statsData?.newCandidates || 0;
 
   const stats = [
     {
       title: "Total Jobs",
-      value: jobsLoading ? "..." : TOTAL_JOBS.toString(),
+      value: statsLoading ? "..." : TOTAL_JOBS.toString(),
       icon: LuBriefcase,
       color: "bg-blue-50 text-blue-600",
     },
     {
       title: "Total Applications",
-      value: appsLoading ? "..." : TOTAL_APPLICATIONS.toString(),
+      value: statsLoading ? "..." : TOTAL_APPLICATIONS.toString(),
       icon: LuUsers,
       color: "bg-green-50 text-green-600",
     },
     {
       title: "New Candidates",
-      value: appsLoading ? "..." : `+${TOTAL_APPLICATIONS}`, // Dynamic fallback map
+      value: statsLoading ? "..." : `+${NEW_CANDIDATES}`, // Dynamic fallback map
       icon: LuTrendingUp,
       color: "bg-indigo-50 text-indigo-600",
     },

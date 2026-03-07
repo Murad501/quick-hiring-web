@@ -1,6 +1,6 @@
 export interface IResponse<T> {
-  data: T[];
-  meta: {
+  data: T;
+  meta?: {
     page: number;
     limit: number;
     total: number;

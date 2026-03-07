@@ -2,13 +2,10 @@ import { baseApi } from "../../api/baseApi";
 import type { IApplication } from "../../../interface/application.interface";
 import type { IResponse } from "../../../interface/common.interface";
 
-
-
-
 export const applicationApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllApplications: builder.query<
-      IResponse<IApplication>,
+      IResponse<IApplication[]>,
       Record<string, any> | void
     >({
       query: (params) => ({

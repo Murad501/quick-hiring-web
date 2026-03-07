@@ -4,7 +4,7 @@ import type { IJob } from "../../../interface/job.interface";
 
 export const jobApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getAllJobs: builder.query<IResponse<IJob>, Record<string, any>>({
+    getAllJobs: builder.query<IResponse<IJob[]>, Record<string, any>>({
       query: (params) => ({
         url: "/jobs",
         params,
@@ -21,7 +21,7 @@ export const jobApi = baseApi.injectEndpoints({
       providesTags: ["Job"],
       transformResponse: (res: any) => res.data,
     }),
-    getAdminJobs: builder.query<IResponse<IJob>, Record<string, any>>({
+    getAdminJobs: builder.query<IResponse<IJob[]>, Record<string, any>>({
       query: (params) => ({
         url: "/jobs/admin",
         params,
