@@ -44,7 +44,7 @@ Create a `.env` file in the root directory and add:
 
 ```env
 # URL of your running backend (without trailing slash)
-VITE_API_URL=https://quick-hiring-server.onrender.com/api/v1
+VITE_API_URL=https://quick-hiring-server.vercel.app/api/v1
 ```
 
 ### 3. Running the App
